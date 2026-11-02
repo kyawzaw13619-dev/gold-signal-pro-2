@@ -3,7 +3,8 @@
 <style>
 *{box-sizing:border-box}body{margin:0;padding:20px 14px 40px;background:#0b1220;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,sans-serif}.wrap{max-width:680px;margin:auto}.brand{font-size:23px;font-weight:800;color:#f3c969;margin:8px 0}.sub,.note,label,small{color:#9fb0c7}.sub{font-size:13px}.card{background:#131e30;border:1px solid #26364d;border-radius:15px;padding:16px;margin:14px 0}h2{font-size:15px;margin:0 0 13px}.signal{font-size:34px;font-weight:800;color:#f3c969}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field label{display:block;font-size:12px;margin-bottom:6px}.field input{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}button{padding:13px;border:0;border-radius:10px;font-weight:700}.primary{width:100%;margin-top:14px;background:#f3c969;color:#18202c}.secondary{background:#263750;color:white}.danger{background:#482632;color:white}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{background:#0b1423;padding:12px;border-radius:9px}.metric span{display:block;font-size:11px;color:#9fb0c7}.metric b{display:block;margin-top:5px}.entry{display:flex;justify-content:space-between;padding:9px;background:#0b1423;border-radius:8px;margin:7px 0;font-size:12px}.buy{color:#27c58a}.sell{color:#ff6474}.wait{color:#f3c969}.actions{display:flex;gap:8px}.actions button{flex:1}.note{font-size:12px;line-height:1.6}@media(min-width:560px){.metrics{grid-template-columns:repeat(4,1fr)}}
 </style></head><body><main class="wrap">
-<div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5｜手入力による参考分析</p>
+<div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5（5分足）専用｜手入力による参考分析</p>
+<section class="card"><h2>分析設定</h2><div class="metrics"><div class="metric"><span>通貨ペア</span><b>XAUUSDs</b></div><div class="metric"><span>時間足</span><b>M5（5分足）</b></div><div class="metric"><span>EMA</span><b>20 / 50</b></div><div class="metric"><span>RSI</span><b>9</b></div></div><p class="note">FXGT OptimusのXAUUSDsを想定した設定です。価格・インジケーター値はMT5から自動取得せず、手入力します。</p><div class="actions"><button class="secondary" id="saveSettings">入力値を保存</button><button class="secondary" id="loadSettings">保存値を呼び出す</button></div><p class="note" id="settingsStatus">入力値はこのiPhoneのブラウザ内に保存できます。</p></section>
 <section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><small id="updated">まだ分析していません</small></section>
 <section class="card"><h2>通知設定</h2><p class="note" id="notifyStatus">通知はまだ設定されていません。</p><button class="secondary" id="enableNotify">通知を有効にする</button><p class="note" id="pwaMode"></p><p class="note">このページを開いて分析したときに、BUY／SELLの結果を通知する試作機能です。ページを閉じている間の自動通知やMT5からの通知ではありません。iPhoneでは通知に対応した環境・設定が必要です。</p></section>
 <section class="card"><h2>インジケーター入力</h2><div class="grid">
@@ -20,6 +21,7 @@
 <div class="metric"><span>EMA方向</span><b id="trend">—</b></div><div class="metric"><span>EMAクロス</span><b id="crossView">—</b></div><div class="metric"><span>RSI 9</span><b id="rsiView">—</b></div>
 <div class="metric"><span>参考SL幅（ATR×1.5）</span><b id="sl">—</b></div><div class="metric"><span>参考TP幅（ATR×2）</span><b id="tp">—</b></div></div>
 <p class="note">試作ルール：BUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。1本前のEMA20・EMA50も入力すると、ゴールデンクロス／デッドクロスを判定します。未入力ならクロスは「判定不可」です。未検証で、利益を保証しません。</p></section>
+<section class="card"><h2>通知履歴</h2><div id="noticeHistory" class="note">BUY／SELLの通知履歴はまだありません。</div><p class="note">この端末で分析したBUY／SELLの記録です。実際のMT5相場を監視しているわけではありません。</p></section>
 <section class="card"><h2>分析回数・検証成績</h2><div class="metrics">
 <div class="metric"><span>BUY回数</span><b id="buyCount">0</b></div>
 <div class="metric"><span>SELL回数</span><b id="sellCount">0</b></div>
@@ -33,6 +35,9 @@
 <p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
+const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb'];
+el('saveSettings').onclick=()=>{const values={};settingIds.forEach(id=>values[id]=el(id).value);localStorage.setItem('gsp_inputs',JSON.stringify(values));el('settingsStatus').textContent='入力値をこの端末に保存しました。';};
+el('loadSettings').onclick=()=>{const saved=JSON.parse(localStorage.getItem('gsp_inputs')||'null');if(!saved){el('settingsStatus').textContent='保存された入力値はありません。';return}settingIds.forEach(id=>el(id).value=saved[id]??'');el('settingsStatus').textContent='保存した入力値を呼び出しました。';};
 function drawChart(){
  const c=el('priceChart'),ctx=c.getContext('2d'),w=c.clientWidth||300,h=180,dpr=window.devicePixelRatio||1;
  c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
@@ -74,6 +79,7 @@ function show(){
  const count=s=>hist.filter(x=>x.s===s).length;
  const done=hist.filter(x=>x.result==='win'||x.result==='loss'),wins=done.filter(x=>x.result==='win').length;
  el('buyCount').textContent=count('BUY');el('sellCount').textContent=count('SELL');el('waitCount').textContent=count('WAIT');
+ const notices=hist.filter(x=>x.s==='BUY'||x.s==='SELL').slice(0,10);el('noticeHistory').innerHTML=notices.length?notices.map(x=>'<div class="entry"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>').join(''):'BUY／SELLの通知履歴はまだありません。';
  el('winRate').textContent=done.length?(wins/done.length*100).toFixed(1)+'%':'—';
  const sessions=[['東京時間',9,17],['ロンドン時間',17,22],['ニューヨーク時間',22,9]];
  el('sessionStats').innerHTML=sessions.map(([name,start,end])=>{const group=hist.filter(x=>{if(x.s==='WAIT')return false;const d=new Date(x.t);const hour=d.getHours();return start<end?(hour>=start&&hour<end):(hour>=start||hour<end)});const judged=group.filter(x=>x.result==='win'||x.result==='loss');const wins=judged.filter(x=>x.result==='win').length;return '<div class="entry"><b>'+name+'</b><span>シグナル '+group.length+'件 ／ 検証 '+judged.length+'件 ／ 勝率 '+(judged.length?(wins/judged.length*100).toFixed(1)+'%':'—')+'</span></div>'}).join('');
