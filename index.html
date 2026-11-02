@@ -17,6 +17,12 @@
 <div class="metric"><span>EMA方向</span><b id="trend">—</b></div><div class="metric"><span>RSI 9</span><b id="rsiView">—</b></div>
 <div class="metric"><span>参考SL幅（ATR×1.5）</span><b id="sl">—</b></div><div class="metric"><span>参考TP幅（ATR×2）</span><b id="tp">—</b></div></div>
 <p class="note">試作ルール：BUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。未検証で、利益を保証しません。</p></section>
+<section class="card"><h2>分析回数・検証成績</h2><div class="metrics">
+<div class="metric"><span>BUY回数</span><b id="buyCount">0</b></div>
+<div class="metric"><span>SELL回数</span><b id="sellCount">0</b></div>
+<div class="metric"><span>WAIT回数</span><b id="waitCount">0</b></div>
+<div class="metric"><span>検証勝率</span><b id="winRate">—</b></div>
+</div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
 <section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
 <section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
 <p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p></main>
@@ -34,11 +40,19 @@ function drawChart(){
  vals.forEach((v,i)=>{const x=pad+i*(w-pad-12)/Math.max(pts.length-1,1),y=12+(hi-v)/range*(h-42);ctx.fillStyle='#f3c969';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill()});
  ctx.fillStyle='#9fb0c7';ctx.font='11px sans-serif';ctx.fillText(hi.toFixed(3),pad,10);ctx.fillText(lo.toFixed(3),pad,h-7);
 }
-function show(){el('history').innerHTML=hist.length?hist.slice(0,20).map(x=>'<div class="entry"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>').join(''):'履歴はまだありません。';drawChart()}
+function show(){
+ const count=s=>hist.filter(x=>x.s===s).length;
+ const done=hist.filter(x=>x.result==='win'||x.result==='loss'),wins=done.filter(x=>x.result==='win').length;
+ el('buyCount').textContent=count('BUY');el('sellCount').textContent=count('SELL');el('waitCount').textContent=count('WAIT');
+ el('winRate').textContent=done.length?(wins/done.length*100).toFixed(1)+'%':'—';
+ el('history').innerHTML=hist.length?hist.slice(0,20).map((x,i)=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>'+(x.s==='WAIT'?'':('<div style="margin-top:8px;display:flex;align-items:center;gap:6px"><small>結果：</small><button class="secondary" data-i="'+i+'" data-r="win" style="padding:6px 10px">勝ち</button><button class="secondary" data-i="'+i+'" data-r="loss" style="padding:6px 10px">負け</button><small>'+(x.result==='win'?'記録：勝ち':x.result==='loss'?'記録：負け':'未判定')+'</small></div>'))+'</div>').join(''):'履歴はまだありません。';
+ el('history').querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>{const idx=Number(b.dataset.i);hist[idx].result=b.dataset.r;localStorage.setItem('gsp_hist',JSON.stringify(hist));show()});
+ drawChart()
+}
 el('analyze').onclick=()=>{let v={};for(let id of ids){if(el(id).value.trim()===''){alert('すべての項目に数値を入力してください');el(id).focus();return}v[id]=Number(el(id).value);if(!Number.isFinite(v[id]))return}
 if(v.rsi<0||v.rsi>100||v.atr<0){alert('RSIは0〜100、ATRは0以上で入力してください');return}
 let s='WAIT';if(v.price>v.ema20&&v.price>v.ema50&&v.price>v.bb&&v.ema20>v.ema50&&v.rsi>=50&&v.rsi<=70)s='BUY';else if(v.price<v.ema20&&v.price<v.ema50&&v.price<v.bb&&v.ema20<v.ema50&&v.rsi>=30&&v.rsi<=50)s='SELL';
 el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*1.5).toFixed(3);el('tp').textContent=(v.atr*2).toFixed(3);hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,rsi:v.rsi,atr:v.atr,bb:v.bb});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist));show()};
 el('clear').onclick=()=>{if(confirm('履歴を消去しますか？')){hist=[];localStorage.removeItem('gsp_hist');show()}};
-window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,RSI9,ATR14,BB中央線\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.rsi??'',x.atr??'',x.bb??''].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};show();
+window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,RSI9,ATR14,BB中央線,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.rsi??'',x.atr??'',x.bb??'',x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};show();
 </script></body></html>
