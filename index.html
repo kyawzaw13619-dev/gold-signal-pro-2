@@ -23,6 +23,7 @@
 <div class="metric"><span>WAIT回数</span><b id="waitCount">0</b></div>
 <div class="metric"><span>検証勝率</span><b id="winRate">—</b></div>
 </div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
+<section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
 <section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
 <section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
 <p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p></main>
@@ -45,6 +46,8 @@ function show(){
  const done=hist.filter(x=>x.result==='win'||x.result==='loss'),wins=done.filter(x=>x.result==='win').length;
  el('buyCount').textContent=count('BUY');el('sellCount').textContent=count('SELL');el('waitCount').textContent=count('WAIT');
  el('winRate').textContent=done.length?(wins/done.length*100).toFixed(1)+'%':'—';
+ const bands=[['30〜40',30,40],['40〜50',40,50],['50〜60',50,60],['60〜70',60,70],['70〜100',70,100.0001]];
+ el('rsiStats').innerHTML=bands.map(([name,min,max])=>{const group=hist.filter(x=>x.s!=='WAIT'&&Number.isFinite(Number(x.rsi))&&Number(x.rsi)>=min&&Number(x.rsi)<max);const judged=group.filter(x=>x.result==='win'||x.result==='loss');const wins=judged.filter(x=>x.result==='win').length;return '<div class="entry"><b>RSI '+name+'</b><span>シグナル '+group.length+'件 ／ 検証 '+judged.length+'件 ／ 勝率 '+(judged.length?(wins/judged.length*100).toFixed(1)+'%':'—')+'</span></div>'}).join('');
  el('history').innerHTML=hist.length?hist.slice(0,20).map((x,i)=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>'+(x.s==='WAIT'?'':('<div style="margin-top:8px;display:flex;align-items:center;gap:6px"><small>結果：</small><button class="secondary" data-i="'+i+'" data-r="win" style="padding:6px 10px">勝ち</button><button class="secondary" data-i="'+i+'" data-r="loss" style="padding:6px 10px">負け</button><small>'+(x.result==='win'?'記録：勝ち':x.result==='loss'?'記録：負け':'未判定')+'</small></div>'))+'</div>').join(''):'履歴はまだありません。';
  el('history').querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>{const idx=Number(b.dataset.i);hist[idx].result=b.dataset.r;localStorage.setItem('gsp_hist',JSON.stringify(hist));show()});
  drawChart()
