@@ -36,6 +36,11 @@
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb'];
+// 入力するたびに端末内へ自動保存し、次回起動時に復元する
+function saveInputsAutomatically(){const values={};settingIds.forEach(id=>values[id]=el(id).value);try{localStorage.setItem('gsp_inputs',JSON.stringify(values));el('settingsStatus').textContent='入力値を自動保存しました。';}catch(e){el('settingsStatus').textContent='自動保存できませんでした。';}}
+function restoreInputsAutomatically(){try{const saved=JSON.parse(localStorage.getItem('gsp_inputs')||'null');if(saved){settingIds.forEach(id=>{if(saved[id]!==undefined)el(id).value=saved[id];});el('settingsStatus').textContent='前回の入力値を復元しました。';}}catch(e){el('settingsStatus').textContent='保存値を読み込めませんでした。';}}
+settingIds.forEach(id=>{el(id).addEventListener('input',saveInputsAutomatically);el(id).addEventListener('change',saveInputsAutomatically);});
+restoreInputsAutomatically();
 el('saveSettings').onclick=()=>{const values={};settingIds.forEach(id=>values[id]=el(id).value);localStorage.setItem('gsp_inputs',JSON.stringify(values));el('settingsStatus').textContent='入力値をこの端末に保存しました。';};
 el('loadSettings').onclick=()=>{const saved=JSON.parse(localStorage.getItem('gsp_inputs')||'null');if(!saved){el('settingsStatus').textContent='保存された入力値はありません。';return}settingIds.forEach(id=>el(id).value=saved[id]??'');el('settingsStatus').textContent='保存した入力値を呼び出しました。';};
 function drawChart(){
