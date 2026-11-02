@@ -5,6 +5,7 @@
 </style></head><body><main class="wrap">
 <div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5｜手入力による参考分析</p>
 <section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><small id="updated">まだ分析していません</small></section>
+<section class="card"><h2>通知設定</h2><p class="note" id="notifyStatus">通知はまだ設定されていません。</p><button class="secondary" id="enableNotify">通知を有効にする</button><p class="note">このページを開いて分析したときに、BUY／SELLの結果を通知する試作機能です。ページを閉じている間の自動通知やMT5からの通知ではありません。iPhoneでは通知に対応した環境・設定が必要です。</p></section>
 <section class="card"><h2>インジケーター入力</h2><div class="grid">
 <div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
 <div class="field"><label>EMA 20</label><input id="ema20" type="number" step="0.001"></div>
@@ -44,6 +45,18 @@ function drawChart(){
  vals.forEach((v,i)=>{const x=pad+i*(w-pad-12)/Math.max(pts.length-1,1),y=12+(hi-v)/range*(h-42);ctx.fillStyle='#f3c969';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill()});
  ctx.fillStyle='#9fb0c7';ctx.font='11px sans-serif';ctx.fillText(hi.toFixed(3),pad,10);ctx.fillText(lo.toFixed(3),pad,h-7);
 }
+function updateNotifyStatus(){
+ const supported='Notification' in window;
+ el('notifyStatus').textContent=!supported?'このブラウザは通知に対応していません。':Notification.permission==='granted'?'通知は許可されています。':Notification.permission==='denied'?'通知がブロックされています。ブラウザの設定を確認してください。':'通知の許可が必要です。';
+}
+function sendSignalNotice(signal,cross){
+ if(!('Notification' in window)||Notification.permission!=='granted'||signal==='WAIT')return;
+ try{new Notification('GOLD SIGNAL PRO｜'+signal,{body:cross==='判定不可'? '分析結果：'+signal:'分析結果：'+signal+'／'+cross,tag:'gsp-signal'});}catch(e){el('notifyStatus').textContent='この環境では通知を表示できませんでした。';}
+}
+el('enableNotify').onclick=async()=>{
+ if(!('Notification' in window)){el('notifyStatus').textContent='このブラウザは通知に対応していません。';return}
+ try{await Notification.requestPermission();updateNotifyStatus();if(Notification.permission==='granted')new Notification('GOLD SIGNAL PRO',{body:'通知設定ができました。分析時にBUY／SELLをお知らせします。'});}catch(e){el('notifyStatus').textContent='通知の設定に失敗しました。';}
+};
 function show(){
  const count=s=>hist.filter(x=>x.s===s).length;
  const done=hist.filter(x=>x.result==='win'||x.result==='loss'),wins=done.filter(x=>x.result==='win').length;
@@ -64,7 +77,7 @@ if((p20===null)!==(p50===null)){alert('クロス判定を使う場合は、1本�
 if(p20!==null&&(!Number.isFinite(p20)||!Number.isFinite(p50))){alert('1本前のEMA値を確認してください');return}
 let cross='判定不可';if(p20!==null){if(p20<=p50&&v.ema20>v.ema50)cross='ゴールデンクロス';else if(p20>=p50&&v.ema20<v.ema50)cross='デッドクロス';else cross='クロスなし'}
 let s='WAIT';if(v.price>v.ema20&&v.price>v.ema50&&v.price>v.bb&&v.ema20>v.ema50&&v.rsi>=50&&v.rsi<=70)s='BUY';else if(v.price<v.ema20&&v.price<v.ema50&&v.price<v.bb&&v.ema20<v.ema50&&v.rsi>=30&&v.rsi<=50)s='SELL';
-el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('crossView').textContent=cross;el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*1.5).toFixed(3);el('tp').textContent=(v.atr*2).toFixed(3);hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,prevEma20:p20,prevEma50:p50,cross,rsi:v.rsi,atr:v.atr,bb:v.bb});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist));show()};
+el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();sendSignalNotice(s,cross);el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('crossView').textContent=cross;el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*1.5).toFixed(3);el('tp').textContent=(v.atr*2).toFixed(3);hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,prevEma20:p20,prevEma50:p50,cross,rsi:v.rsi,atr:v.atr,bb:v.bb});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist));show()};
 el('clear').onclick=()=>{if(confirm('履歴を消去しますか？')){hist=[];localStorage.removeItem('gsp_hist');show()}};
-window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,1本前EMA20,1本前EMA50,クロス,RSI9,ATR14,BB中央線,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.prevEma20??'',x.prevEma50??'',x.cross??'判定不可',x.rsi??'',x.atr??'',x.bb??'',x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};show();
+window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,1本前EMA20,1本前EMA50,クロス,RSI9,ATR14,BB中央線,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.prevEma20??'',x.prevEma50??'',x.cross??'判定不可',x.rsi??'',x.atr??'',x.bb??'',x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};updateNotifyStatus();show();
 </script></body></html>
