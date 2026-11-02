@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101827"><title>GOLD SIGNAL PRO</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:20px 14px 40px;background:#0b1220;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,sans-serif}.wrap{max-width:680px;margin:auto}.brand{font-size:23px;font-weight:800;color:#f3c969;margin:8px 0}.sub,.note,label,small{color:#9fb0c7}.sub{font-size:13px}.card{background:#131e30;border:1px solid #26364d;border-radius:15px;padding:16px;margin:14px 0}h2{font-size:15px;margin:0 0 13px}.signal{font-size:34px;font-weight:800;color:#f3c969}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field label{display:block;font-size:12px;margin-bottom:6px}.field input{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}button{padding:13px;border:0;border-radius:10px;font-weight:700}.primary{width:100%;margin-top:14px;background:#f3c969;color:#18202c}.secondary{background:#263750;color:white}.danger{background:#482632;color:white}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{background:#0b1423;padding:12px;border-radius:9px}.metric span{display:block;font-size:11px;color:#9fb0c7}.metric b{display:block;margin-top:5px}.entry{display:flex;justify-content:space-between;padding:9px;background:#0b1423;border-radius:8px;margin:7px 0;font-size:12px}.buy{color:#27c58a}.sell{color:#ff6474}.wait{color:#f3c969}.actions{display:flex;gap:8px}.actions button{flex:1}.note{font-size:12px;line-height:1.6}@media(min-width:560px){.metrics{grid-template-columns:repeat(4,1fr)}}
+</style></head><body><main class="wrap">
+<div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5｜手入力による参考分析</p>
+<section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><small id="updated">まだ分析していません</small></section>
+<section class="card"><h2>インジケーター入力</h2><div class="grid">
+<div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
+<div class="field"><label>EMA 20</label><input id="ema20" type="number" step="0.001"></div>
+<div class="field"><label>EMA 50</label><input id="ema50" type="number" step="0.001"></div>
+<div class="field"><label>RSI 9</label><input id="rsi" type="number" step="0.01"></div>
+<div class="field"><label>ATR 14</label><input id="atr" type="number" step="0.001"></div>
+<div class="field"><label>BB 中央線</label><input id="bb" type="number" step="0.001"></div>
+</div><button class="primary" id="analyze">分析する</button></section>
+<section class="card"><h2>分析データ</h2><div class="metrics">
+<div class="metric"><span>EMA方向</span><b id="trend">—</b></div><div class="metric"><span>RSI 9</span><b id="rsiView">—</b></div>
+<div class="metric"><span>参考SL幅（ATR×1.5）</span><b id="sl">—</b></div><div class="metric"><span>参考TP幅（ATR×2）</span><b id="tp">—</b></div></div>
+<p class="note">試作ルール：BUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。未検証で、利益を保証しません。</p></section>
+<section class="card"><h2>分析回数・検証成績</h2><div class="metrics">
+<div class="metric"><span>BUY回数</span><b id="buyCount">0</b></div>
+<div class="metric"><span>SELL回数</span><b id="sellCount">0</b></div>
+<div class="metric"><span>WAIT回数</span><b id="waitCount">0</b></div>
+<div class="metric"><span>検証勝率</span><b id="winRate">—</b></div>
+</div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
+<section class="card"><h2>時間帯別の成績比較（日本時間）</h2><div id="sessionStats" class="note">分析履歴が増えると、時間帯ごとの記録を比較できます。</div><p class="note">東京時間 9:00〜16:59、ロンドン時間 17:00〜21:59、ニューヨーク時間 22:00〜翌8:59（簡易区分）。夏時間・冬時間や市場の重なりは考慮しない目安です。時刻は分析した端末の日本時間で分類します。</p></section>
+<section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
+<section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
+<section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p></main>
+<script>
+const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
+function drawChart(){
+ const c=el('priceChart'),ctx=c.getContext('2d'),w=c.clientWidth||300,h=180,dpr=window.devicePixelRatio||1;
+ c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+ const pts=hist.slice(0,20).reverse();
+ if(!pts.length){ctx.fillStyle='#9fb0c7';ctx.font='13px sans-serif';ctx.fillText('分析すると価格の推移が表示されます',10,90);return}
+ const vals=pts.map(x=>Number(x.p)),lo=Math.min(...vals),hi=Math.max(...vals),range=hi-lo||1,pad=22;
+ ctx.strokeStyle='#33445d';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,12);ctx.lineTo(pad,h-25);ctx.lineTo(w-8,h-25);ctx.stroke();
+ ctx.strokeStyle='#f3c969';ctx.lineWidth=2;ctx.beginPath();
+ vals.forEach((v,i)=>{const x=pad+i*(w-pad-12)/Math.max(pts.length-1,1),y=12+(hi-v)/range*(h-42);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+ vals.forEach((v,i)=>{const x=pad+i*(w-pad-12)/Math.max(pts.length-1,1),y=12+(hi-v)/range*(h-42);ctx.fillStyle='#f3c969';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill()});
+ ctx.fillStyle='#9fb0c7';ctx.font='11px sans-serif';ctx.fillText(hi.toFixed(3),pad,10);ctx.fillText(lo.toFixed(3),pad,h-7);
+}
+function show(){
+ const count=s=>hist.filter(x=>x.s===s).length;
+ const done=hist.filter(x=>x.result==='win'||x.result==='loss'),wins=done.filter(x=>x.result==='win').length;
+ el('buyCount').textContent=count('BUY');el('sellCount').textContent=count('SELL');el('waitCount').textContent=count('WAIT');
+ el('winRate').textContent=done.length?(wins/done.length*100).toFixed(1)+'%':'—';
+ const sessions=[['東京時間',9,17],['ロンドン時間',17,22],['ニューヨーク時間',22,9]];
+ el('sessionStats').innerHTML=sessions.map(([name,start,end])=>{const group=hist.filter(x=>{if(x.s==='WAIT')return false;const d=new Date(x.t);const hour=d.getHours();return start<end?(hour>=start&&hour<end):(hour>=start||hour<end)});const judged=group.filter(x=>x.result==='win'||x.result==='loss');const wins=judged.filter(x=>x.result==='win').length;return '<div class="entry"><b>'+name+'</b><span>シグナル '+group.length+'件 ／ 検証 '+judged.length+'件 ／ 勝率 '+(judged.length?(wins/judged.length*100).toFixed(1)+'%':'—')+'</span></div>'}).join('');
+ const bands=[['30〜40',30,40],['40〜50',40,50],['50〜60',50,60],['60〜70',60,70],['70〜100',70,100.0001]];
+ el('rsiStats').innerHTML=bands.map(([name,min,max])=>{const group=hist.filter(x=>x.s!=='WAIT'&&Number.isFinite(Number(x.rsi))&&Number(x.rsi)>=min&&Number(x.rsi)<max);const judged=group.filter(x=>x.result==='win'||x.result==='loss');const wins=judged.filter(x=>x.result==='win').length;return '<div class="entry"><b>RSI '+name+'</b><span>シグナル '+group.length+'件 ／ 検証 '+judged.length+'件 ／ 勝率 '+(judged.length?(wins/judged.length*100).toFixed(1)+'%':'—')+'</span></div>'}).join('');
+ el('history').innerHTML=hist.length?hist.slice(0,20).map((x,i)=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>'+(x.s==='WAIT'?'':('<div style="margin-top:8px;display:flex;align-items:center;gap:6px"><small>結果：</small><button class="secondary" data-i="'+i+'" data-r="win" style="padding:6px 10px">勝ち</button><button class="secondary" data-i="'+i+'" data-r="loss" style="padding:6px 10px">負け</button><small>'+(x.result==='win'?'記録：勝ち':x.result==='loss'?'記録：負け':'未判定')+'</small></div>'))+'</div>').join(''):'履歴はまだありません。';
+ el('history').querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>{const idx=Number(b.dataset.i);hist[idx].result=b.dataset.r;localStorage.setItem('gsp_hist',JSON.stringify(hist));show()});
+ drawChart()
+}
+el('analyze').onclick=()=>{let v={};for(let id of ids){if(el(id).value.trim()===''){alert('すべての項目に数値を入力してください');el(id).focus();return}v[id]=Number(el(id).value);if(!Number.isFinite(v[id]))return}
+if(v.rsi<0||v.rsi>100||v.atr<0){alert('RSIは0〜100、ATRは0以上で入力してください');return}
+let s='WAIT';if(v.price>v.ema20&&v.price>v.ema50&&v.price>v.bb&&v.ema20>v.ema50&&v.rsi>=50&&v.rsi<=70)s='BUY';else if(v.price<v.ema20&&v.price<v.ema50&&v.price<v.bb&&v.ema20<v.ema50&&v.rsi>=30&&v.rsi<=50)s='SELL';
+el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*1.5).toFixed(3);el('tp').textContent=(v.atr*2).toFixed(3);hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,rsi:v.rsi,atr:v.atr,bb:v.bb});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist));show()};
+el('clear').onclick=()=>{if(confirm('履歴を消去しますか？')){hist=[];localStorage.removeItem('gsp_hist');show()}};
+window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,RSI9,ATR14,BB中央線,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.rsi??'',x.atr??'',x.bb??'',x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};show();
+</script></body></html>
