@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="GOLD SIGNAL PRO"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><title>GOLD SIGNAL PRO</title>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="GOLD SIGNAL PRO"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101827'/%3E%3Cpolyline points='8,44 22,30 32,38 46,18 56,24' fill='none' stroke='%23f3c969' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><title>GOLD SIGNAL PRO</title>
 <style>
-*{box-sizing:border-box}body{margin:0;padding:20px 14px 40px;background:#0b1220;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,sans-serif}.wrap{max-width:680px;margin:auto}.brand{font-size:23px;font-weight:800;color:#f3c969;margin:8px 0}.sub,.note,label,small{color:#9fb0c7}.sub{font-size:13px}.card{background:#131e30;border:1px solid #26364d;border-radius:15px;padding:16px;margin:14px 0}h2{font-size:15px;margin:0 0 13px}.signal{font-size:34px;font-weight:800;color:#f3c969}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field label{display:block;font-size:12px;margin-bottom:6px}.field input{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}button{padding:13px;border:0;border-radius:10px;font-weight:700}.primary{width:100%;margin-top:14px;background:#f3c969;color:#18202c}.secondary{background:#263750;color:white}.danger{background:#482632;color:white}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{background:#0b1423;padding:12px;border-radius:9px}.metric span{display:block;font-size:11px;color:#9fb0c7}.metric b{display:block;margin-top:5px}.entry{display:flex;justify-content:space-between;padding:9px;background:#0b1423;border-radius:8px;margin:7px 0;font-size:12px}.buy{color:#27c58a}.sell{color:#ff6474}.wait{color:#f3c969}.actions{display:flex;gap:8px}.actions button{flex:1}.note{font-size:12px;line-height:1.6}@media(min-width:560px){.metrics{grid-template-columns:repeat(4,1fr)}}
+*{box-sizing:border-box}body{margin:0;padding:20px 14px 40px;background:#0b1220;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,sans-serif;touch-action:manipulation}button{touch-action:manipulation}.signal{padding:10px 14px;border-radius:12px}.signal.buy{background:rgba(39,197,138,.13)}.signal.sell{background:rgba(255,100,116,.13)}.signal.wait{background:rgba(243,201,105,.10)}.wrap{max-width:680px;margin:auto}.brand{font-size:23px;font-weight:800;color:#f3c969;margin:8px 0}.sub,.note,label,small{color:#9fb0c7}.sub{font-size:13px}.card{background:#131e30;border:1px solid #26364d;border-radius:15px;padding:16px;margin:14px 0}h2{font-size:15px;margin:0 0 13px}.signal{font-size:34px;font-weight:800;color:#f3c969}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field label{display:block;font-size:12px;margin-bottom:6px}.field input{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}button{padding:13px;border:0;border-radius:10px;font-weight:700}.primary{width:100%;margin-top:14px;background:#f3c969;color:#18202c}.secondary{background:#263750;color:white}.danger{background:#482632;color:white}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{background:#0b1423;padding:12px;border-radius:9px}.metric span{display:block;font-size:11px;color:#9fb0c7}.metric b{display:block;margin-top:5px}.entry{display:flex;justify-content:space-between;padding:9px;background:#0b1423;border-radius:8px;margin:7px 0;font-size:12px}.buy{color:#27c58a}.sell{color:#ff6474}.wait{color:#f3c969}.actions{display:flex;gap:8px}.actions button{flex:1}.note{font-size:12px;line-height:1.6}.field select{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}.check{display:flex;gap:9px;align-items:flex-start;margin-top:13px;font-size:13px;line-height:1.5}.check input{width:20px;height:20px;margin-top:1px;flex:none}.reason{font-size:14px;color:#f3c969;margin-top:7px;line-height:1.5}@media(min-width:560px){.metrics{grid-template-columns:repeat(4,1fr)}}
 </style></head><body><main class="wrap">
 <div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5（5分足）専用｜手入力による参考分析</p>
 <section class="card"><h2>分析設定</h2><div class="metrics"><div class="metric"><span>通貨ペア</span><b>XAUUSDs</b></div><div class="metric"><span>時間足</span><b>M5（5分足）</b></div><div class="metric"><span>EMA</span><b>20 / 50</b></div><div class="metric"><span>RSI</span><b>9</b></div></div><p class="note">FXGT OptimusのXAUUSDsを想定した設定です。価格・インジケーター値はMT5から自動取得せず、手入力します。</p><div class="actions"><button class="secondary" id="saveSettings">入力値を保存</button><button class="secondary" id="loadSettings">保存値を呼び出す</button></div><p class="note" id="settingsStatus">入力値はこのiPhoneのブラウザ内に保存できます。</p></section>
-<section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><small id="updated">まだ分析していません</small></section>
+<section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><div id="reason" class="reason"></div><small id="updated">まだ分析していません</small></section>
 <section class="card"><h2>通知設定</h2><p class="note" id="notifyStatus">通知はまだ設定されていません。</p><button class="secondary" id="enableNotify">通知を有効にする</button><p class="note" id="pwaMode"></p><p class="note">このページを開いて分析したときに、BUY／SELLの結果を通知する試作機能です。ページを閉じている間の自動通知やMT5からの通知ではありません。iPhoneでは通知に対応した環境・設定が必要です。</p></section>
 <section class="card"><h2>インジケーター入力</h2><div class="grid">
 <div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
@@ -16,11 +16,48 @@
 <div class="field"><label>RSI 9</label><input id="rsi" type="number" step="0.01"></div>
 <div class="field"><label>ATR 14</label><input id="atr" type="number" step="0.001"></div>
 <div class="field"><label>BB 中央線</label><input id="bb" type="number" step="0.001"></div>
-</div><button class="primary" id="analyze">分析する</button></section>
+<div class="field"><label>H4の方向（上位足）</label><select id="h4"><option value="down">下降</option><option value="range">レンジ</option><option value="up">上昇</option></select></div>
+<div class="field"><label>H1の方向</label><select id="h1"><option value="down">下降</option><option value="range">レンジ</option><option value="up">上昇</option></select></div>
+<div class="field"><label>直近レジスタンス（任意）</label><input id="res" type="number" step="0.001" placeholder="任意"></div>
+<div class="field"><label>直近サポート（任意）</label><input id="sup" type="number" step="0.001" placeholder="任意"></div>
+</div><label class="check"><input type="checkbox" id="confirm"><span>逆張り確認済み：節目をM15実体で超えて終えた、または節目を取り戻した後の押し目が止まった（下降中の買い／上昇中の売りに必要）</span></label><button class="primary" id="analyze">分析する</button></section>
 <section class="card"><h2>分析データ</h2><div class="metrics">
 <div class="metric"><span>EMA方向</span><b id="trend">—</b></div><div class="metric"><span>EMAクロス</span><b id="crossView">—</b></div><div class="metric"><span>RSI 9</span><b id="rsiView">—</b></div>
-<div class="metric"><span>参考SL幅（ATR×1.5）</span><b id="sl">—</b></div><div class="metric"><span>参考TP幅（ATR×2）</span><b id="tp">—</b></div></div>
-<p class="note">試作ルール：BUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。1本前のEMA20・EMA50も入力すると、ゴールデンクロス／デッドクロスを判定します。未入力ならクロスは「判定不可」です。未検証で、利益を保証しません。</p></section>
+<div class="metric"><span>参考SL幅（ATR×1.5）</span><b id="sl">—</b></div><div class="metric"><span>参考TP幅（ATR×2）</span><b id="tp">—</b></div>
+<div class="metric"><span>SL価格（目安）</span><b id="slPrice">—</b></div><div class="metric"><span>TP価格（目安）</span><b id="tpPrice">—</b></div>
+<div class="metric"><span>レジスタンスまで</span><b id="distRes">—</b></div><div class="metric"><span>サポートまで</span><b id="distSup">—</b></div></div>
+<p class="note">判定ルール（改良版）：土台はBUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。そのうえで、①H4が下降のときのBUY、H4が上昇のときのSELLは「逆張り確認済み」にチェックがないとWAIT（反発の芽どまり）。②レジスタンス直下（ATR×0.5以内）のBUY、サポート直下のSELLは節目に近すぎるためWAIT。判定理由は「現在の判定」の下に表示します。1本前のEMA20・EMA50も入力するとクロスを判定します。未検証で、利益を保証しません。</p></section>
+<section class="card"><h2>ロット計算（リスク管理）</h2><div class="grid">
+<div class="field"><label>口座残高（円）</label><input id="calcBalance" type="number" step="1" value="10000"></div>
+<div class="field"><label>1回の許容損失（円）</label><input id="calcRisk" type="number" step="1" value="1000"></div>
+<div class="field"><label>ドル円レート</label><input id="calcFx" type="number" step="0.01" value="158"></div>
+<div class="field"><label>エントリー価格</label><input id="calcEntry" type="number" step="0.001"></div>
+<div class="field"><label>ストップ価格</label><input id="calcStop" type="number" step="0.001"></div>
+</div><button class="primary" id="calcRun">計算する</button>
+<button class="secondary" id="calcFromSignal" style="width:100%;margin-top:9px">判定の価格を入れる（エントリー／SL）</button>
+<div class="metrics" style="margin-top:13px">
+<div class="metric"><span>ストップ幅</span><b id="calcWidth">—</b></div>
+<div class="metric"><span>推奨ロット</span><b id="calcLot">—</b></div>
+<div class="metric"><span>想定損失（円）</span><b id="calcLoss">—</b></div>
+<div class="metric"><span>判定</span><b id="calcJudge">—</b></div>
+</div><p class="note">FXGTスタンダード想定：0.01ロット＝1オンスなので、$1の値動き＝$1損益。再開ルール中はロットを0.01固定とし、0.01でも許容損失を超える場合は「見送り推奨」を表示します（そのトレードは入らない前提）。</p></section>
+<section class="card"><h2>紙サイン採点（20回検証）</h2>
+<div class="metrics">
+<div class="metric"><span>採点済み</span><b id="paperCount">0 / 20</b></div>
+<div class="metric"><span>合計R</span><b id="paperTotalR">—</b></div>
+<div class="metric"><span>勝率</span><b id="paperWinRate">—</b></div>
+<div class="metric"><span>未判定</span><b id="paperOpen">0</b></div>
+</div>
+<div class="grid" style="margin-top:13px">
+<div class="field"><label>方向</label><select id="paperDir"><option value="BUY">BUY（買い）</option><option value="SELL">SELL（売り）</option></select></div>
+<div class="field"><label>エントリー</label><input id="paperEntry" type="number" step="0.001"></div>
+<div class="field"><label>無効（ストップ）</label><input id="paperStop" type="number" step="0.001"></div>
+<div class="field"><label>目標</label><input id="paperTarget" type="number" step="0.001"></div>
+</div><button class="primary" id="paperAdd">紙サインを登録</button>
+<button class="secondary" id="paperFromSignal" style="width:100%;margin-top:9px">今の判定を紙サインに入れる</button>
+<div id="paperList" style="margin-top:11px"></div>
+<div class="actions" style="margin-top:11px"><button class="secondary" id="paperCsv">紙サインCSV保存</button><button class="danger" id="paperClear">紙サイン消去</button></div>
+<p class="note">ルール：目標が先に到達＝勝ち（予定Rを加算）、無効が先に到達＝負け（−1R）、どちらも届かなければ未約定・対象外。20回分たまったら合計Rで判定します（プラスなら使える、マイナスなら見直し）。</p></section>
 <section class="card"><h2>通知履歴</h2><div id="noticeHistory" class="note">BUY／SELLの通知履歴はまだありません。</div><p class="note">この端末で分析したBUY／SELLの記録です。実際のMT5相場を監視しているわけではありません。</p></section>
 <section class="card"><h2>分析回数・検証成績</h2><div class="metrics">
 <div class="metric"><span>BUY回数</span><b id="buyCount">0</b></div>
@@ -32,10 +69,10 @@
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
 <section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
 <section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v4（判定ルール改良／ロット計算／紙サイン採点／通知強化）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
-const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb'];
+const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
 // 入力するたびに端末内へ自動保存し、次回起動時に復元する
 function saveInputsAutomatically(){const values={};settingIds.forEach(id=>values[id]=el(id).value);try{localStorage.setItem('gsp_inputs',JSON.stringify(values));el('settingsStatus').textContent='入力値を自動保存しました。';}catch(e){el('settingsStatus').textContent='自動保存できませんでした。';}}
 function restoreInputsAutomatically(){try{const saved=JSON.parse(localStorage.getItem('gsp_inputs')||'null');if(saved){settingIds.forEach(id=>{if(saved[id]!==undefined)el(id).value=saved[id];});el('settingsStatus').textContent='前回の入力値を復元しました。';}}catch(e){el('settingsStatus').textContent='保存値を読み込めませんでした。';}}
@@ -67,17 +104,31 @@ function updateNotifyStatus(){
  const supported='Notification' in window;
  el('notifyStatus').textContent=!supported?'この環境は通知APIに対応していません。':Notification.permission==='granted'?'通知は許可されています。':Notification.permission==='denied'?'通知がブロックされています。iPhoneの設定を確認してください。':'通知の許可が必要です。';
 }
+async function showAppNotification(title,body){
+ // 3段構えで通知を出す：SW経由 → 登録済みSW → 通常の通知API
+ try{
+  const reg=swRegistration||await navigator.serviceWorker.ready;
+  if(reg&&reg.active){reg.active.postMessage({type:'SHOW_NOTIFICATION',title:title,message:body});return true}
+ }catch(e){}
+ try{
+  const reg=swRegistration||await navigator.serviceWorker.ready;
+  if(reg){await reg.showNotification(title,{body:body,tag:'gsp-signal',icon:'./icon-192.png',badge:'./icon-192.png'});return true}
+ }catch(e){}
+ try{new Notification(title,{body:body,tag:'gsp-signal',icon:'./icon-192.png'});return true}catch(e){}
+ return false;
+}
 async function sendSignalNotice(signal,cross){
  if(!('Notification' in window)||Notification.permission!=='granted'||signal==='WAIT')return;
- try{const reg=swRegistration||await navigator.serviceWorker.ready;await reg.showNotification('GOLD SIGNAL PRO｜'+signal,{body:cross==='判定不可'?'分析結果：'+signal:'分析結果：'+signal+'／'+cross,tag:'gsp-signal',icon:'./icon-192.png',badge:'./icon-192.png'});}
- catch(e){el('notifyStatus').textContent='通知を表示できませんでした。ホーム画面アプリで開いているか確認してください。';}
+ const body=cross==='判定不可'?'分析結果：'+signal:'分析結果：'+signal+'／'+cross;
+ const ok=await showAppNotification('GOLD SIGNAL PRO｜'+signal,body);
+ if(!ok)el('notifyStatus').textContent='通知を表示できませんでした。ホーム画面アプリで開いているか確認してください。';
 }
 el('enableNotify').onclick=async()=>{
  if(!('Notification' in window)){el('notifyStatus').textContent='この環境は通知APIに対応していません。';return}
  if(!isStandalone){el('notifyStatus').textContent='iPhoneではホーム画面に追加したアイコンから開いてください。';return}
  try{if(!swRegistration)await initPWA();if(!swRegistration){el('notifyStatus').textContent='通知の準備ができていません。再読み込みしてください。';return}
  const permission=await Notification.requestPermission();updateNotifyStatus();
- if(permission==='granted'){await swRegistration.showNotification('GOLD SIGNAL PRO',{body:'通知設定ができました。BUY／SELLの分析時にお知らせします。',icon:'./icon-192.png'});}
+ if(permission==='granted'){const ok=await showAppNotification('GOLD SIGNAL PRO','通知設定ができました。BUY／SELLの分析時にお知らせします。');el('notifyStatus').textContent=ok?'通知は許可されています。テスト通知を送りました。ホーム画面に戻って表示を確認してください。':'通知を表示できませんでした。ホーム画面アプリで開いているか確認してください。';}
  }catch(e){el('notifyStatus').textContent='通知の設定に失敗しました。iPhoneの設定を確認してください。'}
 };
 function show(){
@@ -90,7 +141,7 @@ function show(){
  el('sessionStats').innerHTML=sessions.map(([name,start,end])=>{const group=hist.filter(x=>{if(x.s==='WAIT')return false;const d=new Date(x.t);const hour=d.getHours();return start<end?(hour>=start&&hour<end):(hour>=start||hour<end)});const judged=group.filter(x=>x.result==='win'||x.result==='loss');const wins=judged.filter(x=>x.result==='win').length;return '<div class="entry"><b>'+name+'</b><span>シグナル '+group.length+'件 ／ 検証 '+judged.length+'件 ／ 勝率 '+(judged.length?(wins/judged.length*100).toFixed(1)+'%':'—')+'</span></div>'}).join('');
  const bands=[['30〜40',30,40],['40〜50',40,50],['50〜60',50,60],['60〜70',60,70],['70〜100',70,100.0001]];
  el('rsiStats').innerHTML=bands.map(([name,min,max])=>{const group=hist.filter(x=>x.s!=='WAIT'&&Number.isFinite(Number(x.rsi))&&Number(x.rsi)>=min&&Number(x.rsi)<max);const judged=group.filter(x=>x.result==='win'||x.result==='loss');const wins=judged.filter(x=>x.result==='win').length;return '<div class="entry"><b>RSI '+name+'</b><span>シグナル '+group.length+'件 ／ 検証 '+judged.length+'件 ／ 勝率 '+(judged.length?(wins/judged.length*100).toFixed(1)+'%':'—')+'</span></div>'}).join('');
- el('history').innerHTML=hist.length?hist.slice(0,20).map((x,i)=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>'+(x.s==='WAIT'?'':('<div style="margin-top:8px;display:flex;align-items:center;gap:6px"><small>結果：</small><button class="secondary" data-i="'+i+'" data-r="win" style="padding:6px 10px">勝ち</button><button class="secondary" data-i="'+i+'" data-r="loss" style="padding:6px 10px">負け</button><small>'+(x.result==='win'?'記録：勝ち':x.result==='loss'?'記録：負け':'未判定')+'</small></div>'))+'</div>').join(''):'履歴はまだありません。';
+ el('history').innerHTML=hist.length?hist.slice(0,20).map((x,i)=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>'+(x.reason?'<div style="margin-top:4px"><small>理由：'+x.reason+'</small></div>':'')+(x.s==='WAIT'?'':('<div style="margin-top:8px;display:flex;align-items:center;gap:6px"><small>結果：</small><button class="secondary" data-i="'+i+'" data-r="win" style="padding:6px 10px">勝ち</button><button class="secondary" data-i="'+i+'" data-r="loss" style="padding:6px 10px">負け</button><small>'+(x.result==='win'?'記録：勝ち':x.result==='loss'?'記録：負け':'未判定')+'</small></div>'))+'</div>').join(''):'履歴はまだありません。';
  el('history').querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>{const idx=Number(b.dataset.i);hist[idx].result=b.dataset.r;localStorage.setItem('gsp_hist',JSON.stringify(hist));show()});
  drawChart()
 }
@@ -100,8 +151,67 @@ const p20=el('prevEma20').value.trim()===''?null:Number(el('prevEma20').value),p
 if((p20===null)!==(p50===null)){alert('クロス判定を使う場合は、1本前のEMA20とEMA50を両方入力してください');return}
 if(p20!==null&&(!Number.isFinite(p20)||!Number.isFinite(p50))){alert('1本前のEMA値を確認してください');return}
 let cross='判定不可';if(p20!==null){if(p20<=p50&&v.ema20>v.ema50)cross='ゴールデンクロス';else if(p20>=p50&&v.ema20<v.ema50)cross='デッドクロス';else cross='クロスなし'}
-let s='WAIT';if(v.price>v.ema20&&v.price>v.ema50&&v.price>v.bb&&v.ema20>v.ema50&&v.rsi>=50&&v.rsi<=70)s='BUY';else if(v.price<v.ema20&&v.price<v.ema50&&v.price<v.bb&&v.ema20<v.ema50&&v.rsi>=30&&v.rsi<=50)s='SELL';
-el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();sendSignalNotice(s,cross);el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('crossView').textContent=cross;el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*1.5).toFixed(3);el('tp').textContent=(v.atr*2).toFixed(3);hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,prevEma20:p20,prevEma50:p50,cross,rsi:v.rsi,atr:v.atr,bb:v.bb});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist));show()};
+const h4=el('h4').value,h1=el('h1').value,resVal=el('res').value.trim()===''?null:Number(el('res').value),supVal=el('sup').value.trim()===''?null:Number(el('sup').value),confirmed=el('confirm').checked;
+if((resVal!==null&&!Number.isFinite(resVal))||(supVal!==null&&!Number.isFinite(supVal))){alert('節目の値を確認してください');return}
+let s='WAIT',reason='条件がそろっていません';
+if(v.price>v.ema20&&v.price>v.ema50&&v.price>v.bb&&v.ema20>v.ema50&&v.rsi>=50&&v.rsi<=70){s='BUY';reason='上昇条件がそろいました'}
+else if(v.price<v.ema20&&v.price<v.ema50&&v.price<v.bb&&v.ema20<v.ema50&&v.rsi>=30&&v.rsi<=50){s='SELL';reason='下落条件がそろいました'}
+if(s==='BUY'&&h4==='down'&&!confirmed){s='WAIT';reason='反発の芽（未確認）：H4下降中の買いは節目確認が必要'}
+else if(s==='SELL'&&h4==='up'&&!confirmed){s='WAIT';reason='押し目の芽（未確認）：H4上昇中の売りは節目確認が必要'}
+if(s==='BUY'&&resVal!==null&&(resVal-v.price)<v.atr*0.5){s='WAIT';reason='レジスタンス直下：節目までが近すぎます'}
+else if(s==='SELL'&&supVal!==null&&(v.price-supVal)<v.atr*0.5){s='WAIT';reason='サポート直下：節目までが近すぎます'}
+if(s==='BUY'&&h1==='down')reason='H1は下降：上位足と逆方向、サイズ注意';
+else if(s==='SELL'&&h1==='up')reason='H1は上昇：上位足と逆方向、サイズ注意';
+el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();sendSignalNotice(s,cross);el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('crossView').textContent=cross;el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*1.5).toFixed(3);el('tp').textContent=(v.atr*2).toFixed(3);el('reason').textContent=reason;el('slPrice').textContent=s==='BUY'?(v.price-v.atr*1.5).toFixed(3):s==='SELL'?(v.price+v.atr*1.5).toFixed(3):'—';el('tpPrice').textContent=s==='BUY'?(v.price+v.atr*2).toFixed(3):s==='SELL'?(v.price-v.atr*2).toFixed(3):'—';el('distRes').textContent=resVal!==null?(resVal-v.price).toFixed(3):'—';el('distSup').textContent=supVal!==null?(v.price-supVal).toFixed(3):'—';hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,prevEma20:p20,prevEma50:p50,cross,rsi:v.rsi,atr:v.atr,bb:v.bb,h4,h1,res:resVal,sup:supVal,confirm:confirmed,reason});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist));show()};
 el('clear').onclick=()=>{if(confirm('履歴を消去しますか？')){hist=[];localStorage.removeItem('gsp_hist');show()}};
-window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,1本前EMA20,1本前EMA50,クロス,RSI9,ATR14,BB中央線,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.prevEma20??'',x.prevEma50??'',x.cross??'判定不可',x.rsi??'',x.atr??'',x.bb??'',x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};initPWA();show();
+let paper=JSON.parse(localStorage.getItem('gsp_paper')||'[]');
+function paperSave(){localStorage.setItem('gsp_paper',JSON.stringify(paper))}
+function paperRender(){
+ const done=paper.filter(x=>x.status==='win'||x.status==='loss');
+ const totalR=done.reduce((a,x)=>a+x.r,0);
+ const wins=done.filter(x=>x.status==='win').length;
+ el('paperCount').textContent=done.length+' / 20';
+ el('paperTotalR').textContent=done.length?(totalR>=0?'+':'')+totalR.toFixed(2)+'R':'—';
+ el('paperWinRate').textContent=done.length?(wins/done.length*100).toFixed(1)+'%':'—';
+ el('paperOpen').textContent=paper.filter(x=>x.status==='open').length;
+ el('paperList').innerHTML=paper.length?paper.map((x,i)=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b class="'+x.dir.toLowerCase()+'">'+x.dir+'</b><span>'+x.t+'</span></div><div style="margin-top:3px"><small>入 '+x.entry+'｜無効 '+x.stop+'｜目標 '+x.target+'｜予定 '+(x.plannedR>=0?'+':'')+x.plannedR.toFixed(2)+'R</small></div>'+(x.status==='open'?'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="secondary" data-p="'+i+'" data-o="win" style="padding:6px 10px">目標到達</button><button class="secondary" data-p="'+i+'" data-o="loss" style="padding:6px 10px">無効到達</button><button class="secondary" data-p="'+i+'" data-o="skip" style="padding:6px 10px">未約定・対象外</button></div>':'<div style="margin-top:4px"><small>'+(x.status==='win'?'結果：勝ち（'+(x.r>=0?'+':'')+x.r.toFixed(2)+'R）':x.status==='loss'?'結果：負け（−1R）':'対象外（採点なし）')+'</small></div>')+'</div>').join(''):'<p class="note">紙サインはまだありません。</p>';
+ el('paperList').querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>{const x=paper[Number(b.dataset.p)];const o=b.dataset.o;if(o==='win'){x.status='win';x.r=x.plannedR}else if(o==='loss'){x.status='loss';x.r=-1}else{x.status='skip'}paperSave();paperRender()});
+}
+el('paperAdd').onclick=()=>{
+ const dir=el('paperDir').value,en=Number(el('paperEntry').value),st=Number(el('paperStop').value),ta=Number(el('paperTarget').value);
+ if(![en,st,ta].every(Number.isFinite)||en===st){alert('エントリー・無効・目標を正しく入力してください');return}
+ if(dir==='BUY'&&!(st<en&&en<ta)){alert('BUYは 無効 < エントリー < 目標 の順にしてください');return}
+ if(dir==='SELL'&&!(ta<en&&en<st)){alert('SELLは 目標 < エントリー < 無効 の順にしてください');return}
+ const plannedR=Math.abs(ta-en)/Math.abs(en-st);
+ paper.unshift({dir,t:new Date().toLocaleString('ja-JP'),entry:en,stop:st,target:ta,plannedR,status:'open',r:0});
+ paperSave();paperRender();
+};
+el('paperFromSignal').onclick=()=>{
+ const s=el('signal').textContent.trim();
+ if(s!=='BUY'&&s!=='SELL'){alert('今の判定はBUY／SELLではありません');return}
+ const en=Number(el('price').value),st=parseFloat(el('slPrice').textContent),ta=parseFloat(el('tpPrice').textContent);
+ if(![en,st,ta].every(Number.isFinite)){alert('判定の価格がそろっていません');return}
+ el('paperDir').value=s;el('paperEntry').value=en;el('paperStop').value=st;el('paperTarget').value=ta;
+};
+function calcRender(){
+ const risk=Number(el('calcRisk').value),fx=Number(el('calcFx').value),en=Number(el('calcEntry').value),st=Number(el('calcStop').value);
+ if(![risk,fx,en,st].every(Number.isFinite)||en===st||fx<=0||risk<=0){el('calcWidth').textContent='—';el('calcLot').textContent='—';el('calcLoss').textContent='—';el('calcJudge').textContent='入力を確認';return}
+ const width=Math.abs(en-st);
+ const per001=width*fx;
+ const units=Math.floor(risk/per001);
+ el('calcWidth').textContent='$'+width.toFixed(2);
+ if(units<1){el('calcLot').textContent='0.01でも超過';el('calcLoss').textContent='約'+Math.round(per001).toLocaleString()+'円';el('calcJudge').textContent='見送り推奨'}
+ else{el('calcLot').textContent='0.01 ロット（固定）';el('calcLoss').textContent='約'+Math.round(per001).toLocaleString()+'円';el('calcJudge').textContent='ルール内'}
+}
+el('calcRun').onclick=calcRender;
+['calcBalance','calcRisk','calcFx','calcEntry','calcStop'].forEach(id=>el(id).addEventListener('input',calcRender));
+el('calcFromSignal').onclick=()=>{
+ const en=el('price').value,st=parseFloat(el('slPrice').textContent);
+ if(en===''||!Number.isFinite(st)){alert('先に分析してください（SL価格が必要です）');return}
+ el('calcEntry').value=en;el('calcStop').value=st;calcRender();
+};
+window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,1本前EMA20,1本前EMA50,クロス,RSI9,ATR14,BB中央線,H4,H1,レジスタンス,サポート,逆張り確認,理由,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.prevEma20??'',x.prevEma50??'',x.cross??'判定不可',x.rsi??'',x.atr??'',x.bb??'',x.h4??'',x.h1??'',x.res??'',x.sup??'',x.confirm?'確認済み':'',('"'+String(x.reason??'').replace(/"/g,'""')+'"'),x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};document.querySelectorAll('input[type=number]').forEach(i=>i.setAttribute('inputmode','decimal'));
+el('paperCsv').onclick=()=>{if(!paper.length){alert('紙サインがありません');return}let csv='\uFEFF方向,日時,エントリー,無効,目標,予定R,状態,結果R\n'+paper.map(x=>[x.dir,x.t,x.entry,x.stop,x.target,x.plannedR.toFixed(2),x.status==='win'?'勝ち':x.status==='loss'?'負け':x.status==='skip'?'対象外':'未判定',x.status==='win'||x.status==='loss'?x.r.toFixed(2):''].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-paper-signals.csv';a.click();URL.revokeObjectURL(a.href)};
+el('paperClear').onclick=()=>{if(confirm('紙サインを全て消去しますか？')){paper=[];paperSave();paperRender()}};
+initPWA();show();paperRender();
 </script></body></html>
