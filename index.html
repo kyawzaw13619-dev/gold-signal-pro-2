@@ -5,6 +5,7 @@
 </style></head><body><main class="wrap">
 <div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5（5分足）専用｜手入力による参考分析</p>
 <section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><div id="reason" class="reason"></div><small id="updated">まだ分析していません</small></section>
+<section class="card"><h2>時間足別の判定（M5／M15／H1）</h2><div id="tfBody"><p class="note">「公開価格で自動取得」か下のボタンを押すと、5分・15分・1時間それぞれの判定を表示します。</p></div><button class="primary" id="tfRun" style="margin-top:11px">公開データで時間足別に判定</button></section>
 <section class="card"><h2>インジケーター入力</h2><div class="grid">
 <div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
 <div class="field"><label>EMA 20</label><input id="ema20" type="number" step="0.001"></div>
@@ -70,7 +71,7 @@
 </div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
 <section class="card"><h2>時間帯別の成績比較（日本時間）</h2><div id="sessionStats" class="note">分析履歴が増えると、時間帯ごとの記録を比較できます。</div><p class="note">東京時間 9:00〜16:59、ロンドン時間 17:00〜21:59、ニューヨーク時間 22:00〜翌8:59（簡易区分）。夏時間・冬時間や市場の重なりは考慮しない目安です。時刻は分析した端末の日本時間で分類します。</p></section>
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v11（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v12（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
@@ -245,11 +246,11 @@ async function visionCandles(iv){const r=await fetch('https://data-api.binance.v
 let lastSrc='';
 async function coinbaseCandles(mins){
  if(mins===240){const h=await coinbaseCandles(60);const out=[];for(let i=0;i+3<h.length;i+=4){out.push({o:h[i].o,h:Math.max(h[i].h,h[i+1].h,h[i+2].h,h[i+3].h),l:Math.min(h[i].l,h[i+1].l,h[i+2].l,h[i+3].l),c:h[i+3].c})}return out}
- const g=mins===5?300:3600;const r=await fetch('https://api.exchange.coinbase.com/products/PAXG-USD/candles?granularity='+g);if(!r.ok)throw new Error('HTTP'+r.status);const j=await r.json();if(!Array.isArray(j))throw new Error('形式エラー');return j.slice().reverse().map(c=>({o:+c[3],h:+c[2],l:+c[1],c:+c[4]}))
+ const g=mins===5?300:mins===15?900:3600;const r=await fetch('https://api.exchange.coinbase.com/products/PAXG-USD/candles?granularity='+g);if(!r.ok)throw new Error('HTTP'+r.status);const j=await r.json();if(!Array.isArray(j))throw new Error('形式エラー');return j.slice().reverse().map(c=>({o:+c[3],h:+c[2],l:+c[1],c:+c[4]}))
 }
 async function candlesAny(mins){
  try{const d=await krakenCandles(mins);lastSrc='Kraken';if(mins===5)diag.push('Kraken○');return d}catch(e){if(mins===5)diag.push('Kraken×'+(e&&e.message?e.message:''))}
- try{const d=await visionCandles({5:'5m',60:'1h',240:'4h'}[mins]);lastSrc='Binance';if(mins===5)diag.push('Binance○');return d}catch(e){if(mins===5)diag.push('Binance×'+(e&&e.message?e.message:''))}
+ try{const d=await visionCandles({5:'5m',15:'15m',60:'1h',240:'4h'}[mins]);lastSrc='Binance';if(mins===5)diag.push('Binance○');return d}catch(e){if(mins===5)diag.push('Binance×'+(e&&e.message?e.message:''))}
  try{const d=await coinbaseCandles(mins);lastSrc='Coinbase';if(mins===5)diag.push('Coinbase○');return d}catch(e){if(mins===5)diag.push('Coinbase×'+(e&&e.message?e.message:''));throw e}
 }
 let pubRunning=false;
@@ -273,6 +274,8 @@ async function fetchPublic(manual){
    }
    throw new Error('few');
   }
+  window._tfCandles={m5:m5};
+  try{window._tfCandles.m15=await candlesAny(15)}catch(e){}
   const closes=m5.map(x=>x.c);
   const e20=emaSeries(closes,20),e50=emaSeries(closes,50);
   const price=spot>0?spot:closes[closes.length-1];
@@ -281,11 +284,11 @@ async function fetchPublic(manual){
   setNum('bb',+(closes.slice(-20).reduce((a,b)=>a+b,0)/20).toFixed(3));
   setNum('rsi',+rsiWilder(closes,9).toFixed(1));setNum('atr',+atrWilder(m5,14).toFixed(3));
   const win=m5.slice(-97,-1);setNum('res',Math.max(...win.map(x=>x.h)));setNum('sup',Math.min(...win.map(x=>x.l)));
-  try{const h1=await candlesAny(60);el('h1').value=trendOf(h1.map(x=>x.c))}catch(e){}
-  try{const h4=await candlesAny(240);el('h4').value=trendOf(h4.map(x=>x.c))}catch(e){}
+  try{const h1=await candlesAny(60);window._tfCandles.h1=h1;el('h1').value=trendOf(h1.map(x=>x.c))}catch(e){}
+  try{const h4=await candlesAny(240);window._tfCandles.h4=h4;el('h4').value=trendOf(h4.map(x=>x.c))}catch(e){}
   try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
   el('autoStatus').textContent='公開取得OK（指標の取得先：'+lastSrc+'）：価格は'+(spot>0?'金スポット価格':'PAXG価格')+'、指標はPAXGのローソクから計算（目安）。FXGTと数ドルずれることがあります。［診断：'+diag.join('／')+'］';
-  saveInputsAutomatically();el('analyze').click();pubRunning=false;return true;
+  saveInputsAutomatically();el('analyze').click();judgeAllTF();pubRunning=false;return true;
  }catch(e){
   el('autoStatus').textContent='公開データを取得できませんでした。［診断：'+diag.join('／')+'／本体×'+(e&&e.message?e.message:'')+'］この画面のスクショをジェイムに送ってください。';
   if(manual)alert('公開データを取得できませんでした');
@@ -293,6 +296,41 @@ async function fetchPublic(manual){
  }
 }
 el('pubFetch').onclick=()=>fetchPublic(true);
+function judgeTF(price,ema20,ema50,ema20p,ema50p,rsi,atr,bb,ctx,res,sup){
+ const crossUp=ema20>ema50,wasDown=ema20p<=ema50p;
+ let s='WAIT',reason='条件がそろっていません';
+ const buy=price>ema20&&price>ema50&&price>bb&&crossUp&&rsi>=50&&rsi<=70;
+ const sell=price<ema20&&price<ema50&&price<bb&&!crossUp&&rsi>=30&&rsi<=50;
+ if(buy){
+  if(ctx==='down'){s='WAIT';reason='上位足は下降。反発の芽（未確認）'}
+  else if(res>0&&(res-price)<=atr*0.5){s='WAIT';reason='レジスタンス直下'}
+  else{s='BUY';reason=wasDown?'EMAがゴールデンクロス':'EMA上向き継続'}
+ }else if(sell){
+  if(ctx==='up'){s='WAIT';reason='上位足は上昇。逆張り未確認'}
+  else if(sup>0&&(price-sup)<=atr*0.5){s='WAIT';reason='サポート直下'}
+  else{s='SELL';reason=wasDown?'EMA下向き継続':'EMAがデッドクロス'}
+ }
+ const sl=s==='BUY'?price-atr*1.5:s==='SELL'?price+atr*1.5:null;
+ const tp=s==='BUY'?price+atr*2:s==='SELL'?price-atr*2:null;
+ return{s:s,reason:reason,sl:sl,tp:tp};
+}
+function tfIndicators(cs){
+ const closes=cs.map(x=>x.c);const e20=emaSeries(closes,20),e50=emaSeries(closes,50);const n=closes.length;
+ const win=cs.slice(-97,-1);
+ return{price:closes[n-1],ema20:e20[n-1],ema50:e50[n-1],ema20p:e20[n-2],ema50p:e50[n-2],rsi:rsiWilder(closes,9),atr:atrWilder(cs,14),bb:closes.slice(-20).reduce((a,b)=>a+b,0)/20,res:win.length?Math.max(...win.map(x=>x.h)):0,sup:win.length?Math.min(...win.map(x=>x.l)):0};
+}
+function judgeAllTF(){
+ const box=el('tfBody');const C=window._tfCandles;
+ if(!C||!C.m5){box.innerHTML='<p class="note">先に「公開価格で自動取得」を押してください。</p>';return}
+ const h1ctx=C.h1?trendOf(C.h1.map(x=>x.c)):'flat';
+ const h4ctx=C.h4?trendOf(C.h4.map(x=>x.c)):'flat';
+ const rows=[];
+ const a=tfIndicators(C.m5);rows.push(['M5（5分）',judgeTF(a.price,a.ema20,a.ema50,a.ema20p,a.ema50p,a.rsi,a.atr,a.bb,h1ctx,a.res,a.sup),a]);
+ if(C.m15){const b=tfIndicators(C.m15);rows.push(['M15（15分）',judgeTF(b.price,b.ema20,b.ema50,b.ema20p,b.ema50p,b.rsi,b.atr,b.bb,h4ctx,b.res,b.sup),b])}
+ if(C.h1){const c=tfIndicators(C.h1);rows.push(['H1（1時間）',judgeTF(c.price,c.ema20,c.ema50,c.ema20p,c.ema50p,c.rsi,c.atr,c.bb,h4ctx,c.res,c.sup),c])}
+ box.innerHTML=rows.map(r=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+r[0]+'</b><b class="'+r[1].s.toLowerCase()+'">'+r[1].s+'</b></div><div style="margin-top:3px"><small>価格 '+r[2].price.toFixed(2)+'｜EMA20 '+r[2].ema20.toFixed(2)+'／EMA50 '+r[2].ema50.toFixed(2)+'｜RSI '+r[2].rsi.toFixed(0)+'｜ATR '+r[2].atr.toFixed(2)+'</small></div><div style="margin-top:2px"><small>'+r[1].reason+(r[1].sl?'｜SL '+r[1].sl.toFixed(2)+'／TP '+r[1].tp.toFixed(2):'')+'</small></div></div>').join('')+'<p class="note">各時間足とも、その時間足自身のローソクから計算した指標で判定しています（取得先：'+lastSrc+'、PAXGベースの目安）。上位足に逆らう判定は、確認が取れるまでWAITに落としています。</p>';
+}
+el('tfRun').onclick=()=>{fetchPublic(true)};
 document.querySelectorAll('input[type=number]').forEach(i=>i.setAttribute('inputmode','decimal'));
 el('paperCsv').onclick=()=>{if(!paper.length){alert('紙サインがありません');return}let csv='\uFEFF方向,日時,エントリー,無効,目標,予定R,状態,結果R\n'+paper.map(x=>[x.dir,x.t,x.entry,x.stop,x.target,x.plannedR.toFixed(2),x.status==='win'?'勝ち':x.status==='loss'?'負け':x.status==='skip'?'対象外':'未判定',x.status==='win'||x.status==='loss'?x.r.toFixed(2):''].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-paper-signals.csv';a.click();URL.revokeObjectURL(a.href)};
 el('paperClear').onclick=()=>{if(confirm('紙サインを全て消去しますか？')){paper=[];paperSave();paperRender()}};
