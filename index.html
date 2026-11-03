@@ -70,7 +70,7 @@
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
 <section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
 <section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v9（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得・診断表示つき）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v10（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
@@ -226,8 +226,8 @@ async function fetchData(manual){
   if(d.h4)el('h4').value=d.h4;
   if(d.h1)el('h1').value=d.h1;
   el('autoStatus').textContent='取り込み完了：'+(d.symbol||'XAUUSD')+'／'+(d.ts||'')+' のデータ';
-  saveInputs();
-  analyze();
+  saveInputsAutomatically();
+  el('analyze').click();
   return true;
  }catch(e){
   el('autoStatus').textContent='データを取得できませんでした。PC側でMT5と連携EAが動いているか確認してください。';
@@ -269,7 +269,7 @@ async function fetchPublic(manual){
     setNum('price',+spot.toFixed(3));
     try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
     el('autoStatus').textContent='価格だけ取得しました（指標は前回のまま）。［診断：'+diag.join('／')+'］';
-    saveInputs();analyze();pubRunning=false;return true;
+    saveInputsAutomatically();el('analyze').click();pubRunning=false;return true;
    }
    throw new Error('few');
   }
@@ -285,9 +285,9 @@ async function fetchPublic(manual){
   try{const h4=await candlesAny(240);el('h4').value=trendOf(h4.map(x=>x.c))}catch(e){}
   try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
   el('autoStatus').textContent='公開取得OK（指標の取得先：'+lastSrc+'）：価格は'+(spot>0?'金スポット価格':'PAXG価格')+'、指標はPAXGのローソクから計算（目安）。FXGTと数ドルずれることがあります。［診断：'+diag.join('／')+'］';
-  saveInputs();analyze();pubRunning=false;return true;
+  saveInputsAutomatically();el('analyze').click();pubRunning=false;return true;
  }catch(e){
-  el('autoStatus').textContent='公開データを取得できませんでした。［診断：'+diag.join('／')+'］この画面のスクショをジェイムに送ってください。';
+  el('autoStatus').textContent='公開データを取得できませんでした。［診断：'+diag.join('／')+'／本体×'+(e&&e.message?e.message:'')+'］この画面のスクショをジェイムに送ってください。';
   if(manual)alert('公開データを取得できませんでした');
   pubRunning=false;return false;
  }
