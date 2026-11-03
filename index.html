@@ -70,7 +70,7 @@
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
 <section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
 <section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v7（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得・予備回線つき）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v8（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得・取得先3系統）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
@@ -241,7 +241,16 @@ function rsiWilder(closes,p){let g=0,l=0;for(let i=1;i<=p;i++){const d=closes[i]
 function atrWilder(cs,p){const trs=[];for(let i=1;i<cs.length;i++)trs.push(Math.max(cs[i].h-cs[i].l,Math.abs(cs[i].h-cs[i-1].c),Math.abs(cs[i].l-cs[i-1].c)));let a=trs.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<trs.length;i++)a=(a*(p-1)+trs[i])/p;return a}
 async function krakenCandles(iv){const r=await fetch('https://api.kraken.com/0/public/OHLC?pair=PAXGUSD&interval='+iv);const j=await r.json();const key=Object.keys(j.result).find(k=>k!=='last');return j.result[key].map(c=>({o:+c[1],h:+c[2],l:+c[3],c:+c[4]}))}
 async function visionCandles(iv){const r=await fetch('https://data-api.binance.vision/api/v3/klines?symbol=PAXGUSDT&interval='+iv+'&limit=200');const j=await r.json();if(!Array.isArray(j))throw new Error('vision');return j.map(c=>({o:+c[1],h:+c[2],l:+c[3],c:+c[4]}))}
-async function candlesAny(mins){const map={5:'5m',60:'1h',240:'4h'};try{return await krakenCandles(mins)}catch(e){return await visionCandles(map[mins])}}
+let lastSrc='';
+async function coinbaseCandles(mins){
+ if(mins===240){const h=await coinbaseCandles(60);const out=[];for(let i=0;i+3<h.length;i+=4){out.push({o:h[i].o,h:Math.max(h[i].h,h[i+1].h,h[i+2].h,h[i+3].h),l:Math.min(h[i].l,h[i+1].l,h[i+2].l,h[i+3].l),c:h[i+3].c})}return out}
+ const g=mins===5?300:3600;const r=await fetch('https://api.exchange.coinbase.com/products/PAXG-USD/candles?granularity='+g);const j=await r.json();if(!Array.isArray(j))throw new Error('cb');return j.slice().reverse().map(c=>({o:+c[3],h:+c[2],l:+c[1],c:+c[4]}))
+}
+async function candlesAny(mins){
+ try{const d=await krakenCandles(mins);lastSrc='Kraken';return d}catch(e){}
+ try{const d=await visionCandles({5:'5m',60:'1h',240:'4h'}[mins]);lastSrc='Binance';return d}catch(e){}
+ const d=await coinbaseCandles(mins);lastSrc='Coinbase';return d;
+}
 let pubRunning=false;
 function trendOf(closes){const a=emaSeries(closes,20),b=emaSeries(closes,50);const d=a[a.length-1]-b[b.length-1];return Math.abs(d)<0.01?'flat':(d>0?'up':'down')}
 async function fetchPublic(manual){
@@ -252,8 +261,16 @@ async function fetchPublic(manual){
   let spot=0;
   try{const r=await fetch('https://api.gold-api.com/price/XAU');const j=await r.json();if(j.price>0)spot=j.price}catch(e){}
   let m5=null;
-  try{m5=await candlesAny(5)}catch(e){await new Promise(rs=>setTimeout(rs,900));m5=await candlesAny(5)}
-  if(!m5||m5.length<100)throw new Error('few');
+  try{m5=await candlesAny(5)}catch(e){await new Promise(rs=>setTimeout(rs,900));try{m5=await candlesAny(5)}catch(e2){}}
+  if(!m5||m5.length<100){
+   if(spot>0){
+    setNum('price',+spot.toFixed(3));
+    try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
+    el('autoStatus').textContent='価格だけ取得しました（指標は前回のまま）。ローソク足の取得先が応答しません。時間をおくか、回線（Wi-Fi／モバイル）を切り替えてもう一度押してください。';
+    saveInputs();analyze();pubRunning=false;return true;
+   }
+   throw new Error('few');
+  }
   const closes=m5.map(x=>x.c);
   const e20=emaSeries(closes,20),e50=emaSeries(closes,50);
   const price=spot>0?spot:closes[closes.length-1];
@@ -265,10 +282,10 @@ async function fetchPublic(manual){
   try{const h1=await candlesAny(60);el('h1').value=trendOf(h1.map(x=>x.c))}catch(e){}
   try{const h4=await candlesAny(240);el('h4').value=trendOf(h4.map(x=>x.c))}catch(e){}
   try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
-  el('autoStatus').textContent='公開取得OK：価格は'+(spot>0?'金スポット価格':'PAXG価格')+'、指標はPAXGのローソクから計算（目安）。FXGTと数ドルずれることがあります。';
+  el('autoStatus').textContent='公開取得OK（指標の取得先：'+lastSrc+'）：価格は'+(spot>0?'金スポット価格':'PAXG価格')+'、指標はPAXGのローソクから計算（目安）。FXGTと数ドルずれることがあります。';
   saveInputs();analyze();pubRunning=false;return true;
  }catch(e){
-  el('autoStatus').textContent='公開データを取得できませんでした。通信状態を確認してもう一度押してください。';
+  el('autoStatus').textContent='公開データを取得できませんでした。取得先がすべて応答しません（回線側の制限の可能性）。Wi-Fiとモバイル回線を切り替えて試してください。';
   if(manual)alert('公開データを取得できませんでした');
   pubRunning=false;return false;
  }
