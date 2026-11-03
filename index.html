@@ -26,7 +26,7 @@
 <div class="metric"><span>参考SL幅（ATR×1.5）</span><b id="sl">—</b></div><div class="metric"><span>参考TP幅（ATR×2）</span><b id="tp">—</b></div>
 <div class="metric"><span>SL価格（目安）</span><b id="slPrice">—</b></div><div class="metric"><span>TP価格（目安）</span><b id="tpPrice">—</b></div>
 <div class="metric"><span>レジスタンスまで</span><b id="distRes">—</b></div><div class="metric"><span>サポートまで</span><b id="distSup">—</b></div></div>
-<p class="note">判定ルール（改良版）：土台はBUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。そのうえで、①H4が下降のときのBUY、H4が上昇のときのSELLは「逆張り確認済み」にチェックがないとWAIT（反発の芽どまり）。②レジスタンス直下（ATR×0.5以内）のBUY、サポート直下のSELLは節目に近すぎるためWAIT。判定理由は「現在の判定」の下に表示します。1本前のEMA20・EMA50も入力するとクロスを判定します。未検証で、利益を保証しません。</p></section>
+<p class="note">判定ルール（現行版）：土台はBUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。そのうえで、①押し目・戻り限定：価格がEMA20からATR×0.5以上離れている場合は「伸びすぎ・落ちすぎ（押し目待ち）」としてWAIT（追いかけ禁止）。②H4が下降のときのBUY、H4が上昇のときのSELLは「逆張り確認済み」にチェックがないとWAIT（反発の芽どまり）。時間足別の判定では、上位足に逆らう判定は自動でWAITになります。③レジスタンス直下（ATR×0.5以内）のBUY、サポート直下のSELLは節目に近すぎるためWAIT。損切り幅＝ATR×2.5、利確幅＝ATR×1。判定理由は「現在の判定」の下に表示します。1本前のEMA20・EMA50も入力するとクロスを判定します。フィボナッチ・ゾーンは判定には使わず表示のみです。バックテスト済みの目安であり、利益を保証しません。</p></section>
 <section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
 <section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
 <section class="card"><h2>自動取得（PC連携）</h2><p class="note" id="autoStatus">PCのMT5（連携EA）から最新データを取り込めます。</p><label style="display:flex;gap:8px;align-items:flex-start;font-weight:700;line-height:1.4"><input id="autoMode" type="checkbox" style="width:20px;height:20px;margin:1px 0 0">自動モード（開いたら取り込み＋開いている間は60秒ごとに自動更新）</label><button class="primary" id="autoFetch" style="margin-top:11px">最新データを取り込んで分析（PC連携）</button><button class="primary" id="pubFetch" style="margin-top:9px;background:#3f6212">公開価格で自動取得（PCなし）</button><p class="note">取り込む項目：現在価格、EMA20/50（前回も）、RSI、ATR、BB中央、H4/H1の向き、直近レジスタンス／サポート、ドル円。手入力での上書きもできます。公開取得の価格は金のスポット価格、指標は金連動トークンPAXGのローソクから計算した目安です（FXGT価格と数ドルずれることがあります）。</p></section>
@@ -72,7 +72,7 @@
 </div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
 <section class="card"><h2>時間帯別の成績比較（日本時間）</h2><div id="sessionStats" class="note">分析履歴が増えると、時間帯ごとの記録を比較できます。</div><p class="note">東京時間 9:00〜16:59、ロンドン時間 17:00〜21:59、ニューヨーク時間 22:00〜翌8:59（簡易区分）。夏時間・冬時間や市場の重なりは考慮しない目安です。時刻は分析した端末の日本時間で分類します。</p></section>
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">Pro Gold Hunters 改良版 v18（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">Pro Gold Hunters 改良版 v19（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
