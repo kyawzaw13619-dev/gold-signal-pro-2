@@ -7,6 +7,7 @@
 <section class="card"><h2>分析設定</h2><div class="metrics"><div class="metric"><span>通貨ペア</span><b>XAUUSDs</b></div><div class="metric"><span>時間足</span><b>M5（5分足）</b></div><div class="metric"><span>EMA</span><b>20 / 50</b></div><div class="metric"><span>RSI</span><b>9</b></div></div><p class="note">FXGT OptimusのXAUUSDsを想定した設定です。価格・インジケーター値はMT5から自動取得せず、手入力します。</p><div class="actions"><button class="secondary" id="saveSettings">入力値を保存</button><button class="secondary" id="loadSettings">保存値を呼び出す</button></div><p class="note" id="settingsStatus">入力値はこのiPhoneのブラウザ内に保存できます。</p></section>
 <section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><div id="reason" class="reason"></div><small id="updated">まだ分析していません</small></section>
 <section class="card"><h2>通知設定</h2><p class="note" id="notifyStatus">通知はまだ設定されていません。</p><button class="secondary" id="enableNotify">通知を有効にする</button><p class="note" id="pwaMode"></p><p class="note">このページを開いて分析したときに、BUY／SELLの結果を通知する試作機能です。ページを閉じている間の自動通知やMT5からの通知ではありません。iPhoneでは通知に対応した環境・設定が必要です。</p></section>
+<section class="card"><h2>自動取得（PC連携）</h2><p class="note" id="autoStatus">PCのMT5（連携EA）から最新データを取り込めます。</p><label style="display:flex;gap:8px;align-items:flex-start;font-weight:700;line-height:1.4"><input id="autoMode" type="checkbox" style="width:20px;height:20px;margin:1px 0 0">自動モード（開いたら取り込んで分析）</label><button class="primary" id="autoFetch" style="margin-top:11px">最新データを取り込んで分析（PC連携）</button><button class="primary" id="pubFetch" style="margin-top:9px;background:#3f6212">公開価格で自動取得（PCなし）</button><p class="note">取り込む項目：現在価格、EMA20/50（前回も）、RSI、ATR、BB中央、H4/H1の向き、直近レジスタンス／サポート、ドル円。手入力での上書きもできます。公開取得の価格は金のスポット価格、指標は金連動トークンPAXGのローソクから計算した目安です（FXGT価格と数ドルずれることがあります）。</p></section>
 <section class="card"><h2>インジケーター入力</h2><div class="grid">
 <div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
 <div class="field"><label>EMA 20</label><input id="ema20" type="number" step="0.001"></div>
@@ -69,7 +70,7 @@
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
 <section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
 <section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v4（判定ルール改良／ロット計算／紙サイン採点／通知強化）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v6（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
@@ -210,8 +211,65 @@ el('calcFromSignal').onclick=()=>{
  if(en===''||!Number.isFinite(st)){alert('先に分析してください（SL価格が必要です）');return}
  el('calcEntry').value=en;el('calcStop').value=st;calcRender();
 };
-window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,1本前EMA20,1本前EMA50,クロス,RSI9,ATR14,BB中央線,H4,H1,レジスタンス,サポート,逆張り確認,理由,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.prevEma20??'',x.prevEma50??'',x.cross??'判定不可',x.rsi??'',x.atr??'',x.bb??'',x.h4??'',x.h1??'',x.res??'',x.sup??'',x.confirm?'確認済み':'',('"'+String(x.reason??'').replace(/"/g,'""')+'"'),x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};document.querySelectorAll('input[type=number]').forEach(i=>i.setAttribute('inputmode','decimal'));
+window.addEventListener('resize',drawChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,1本前EMA20,1本前EMA50,クロス,RSI9,ATR14,BB中央線,H4,H1,レジスタンス,サポート,逆張り確認,理由,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.prevEma20??'',x.prevEma50??'',x.cross??'判定不可',x.rsi??'',x.atr??'',x.bb??'',x.h4??'',x.h1??'',x.res??'',x.sup??'',x.confirm?'確認済み':'',('"'+String(x.reason??'').replace(/"/g,'""')+'"'),x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};el('autoMode').checked=localStorage.getItem('gsp_auto')==='1';
+el('autoMode').addEventListener('change',()=>{localStorage.setItem('gsp_auto',el('autoMode').checked?'1':'0');if(el('autoMode').checked)fetchData(true)});
+function setNum(id,v){if(Number.isFinite(v)&&v>0)el(id).value=v}
+async function fetchData(manual){
+ el('autoStatus').textContent='取り込み中…';
+ try{
+  const r=await fetch('data.json?t='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw new Error('nodata');
+  const d=await r.json();
+  if(!Number.isFinite(d.price)||d.price<=0)throw new Error('empty');
+  setNum('price',d.price);setNum('ema20',d.ema20);setNum('prevEma20',d.ema20p);setNum('ema50',d.ema50);setNum('prevEma50',d.ema50p);
+  setNum('bb',d.bb);setNum('rsi',d.rsi);setNum('atr',d.atr);setNum('res',d.res);setNum('sup',d.sup);setNum('calcFx',d.usdjpy);
+  if(d.h4)el('h4').value=d.h4;
+  if(d.h1)el('h1').value=d.h1;
+  el('autoStatus').textContent='取り込み完了：'+(d.symbol||'XAUUSD')+'／'+(d.ts||'')+' のデータ';
+  saveInputs();
+  analyze();
+  return true;
+ }catch(e){
+  el('autoStatus').textContent='データを取得できませんでした。PC側でMT5と連携EAが動いているか確認してください。';
+  if(manual)alert('データを取得できませんでした');
+  return false;
+ }
+}
+el('autoFetch').onclick=()=>fetchData(true);
+function emaSeries(vals,p){const k=2/(p+1);const out=[vals[0]];for(let i=1;i<vals.length;i++)out.push(vals[i]*k+out[i-1]*(1-k));return out}
+function rsiWilder(closes,p){let g=0,l=0;for(let i=1;i<=p;i++){const d=closes[i]-closes[i-1];if(d>0)g+=d;else l-=d}g/=p;l/=p;for(let i=p+1;i<closes.length;i++){const d=closes[i]-closes[i-1];g=(g*(p-1)+Math.max(d,0))/p;l=(l*(p-1)+Math.max(-d,0))/p}return l===0?100:100-100/(1+g/l)}
+function atrWilder(cs,p){const trs=[];for(let i=1;i<cs.length;i++)trs.push(Math.max(cs[i].h-cs[i].l,Math.abs(cs[i].h-cs[i-1].c),Math.abs(cs[i].l-cs[i-1].c)));let a=trs.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<trs.length;i++)a=(a*(p-1)+trs[i])/p;return a}
+async function krakenCandles(iv){const r=await fetch('https://api.kraken.com/0/public/OHLC?pair=PAXGUSD&interval='+iv);const j=await r.json();const key=Object.keys(j.result).find(k=>k!=='last');return j.result[key].map(c=>({o:+c[1],h:+c[2],l:+c[3],c:+c[4]}))}
+function trendOf(closes){const a=emaSeries(closes,20),b=emaSeries(closes,50);const d=a[a.length-1]-b[b.length-1];return Math.abs(d)<0.01?'flat':(d>0?'up':'down')}
+async function fetchPublic(manual){
+ el('autoStatus').textContent='公開データを取り込み中…';
+ try{
+  let spot=0;
+  try{const r=await fetch('https://api.gold-api.com/price/XAU');const j=await r.json();if(j.price>0)spot=j.price}catch(e){}
+  const m5=await krakenCandles(5);
+  if(m5.length<100)throw new Error('few');
+  const closes=m5.map(x=>x.c);
+  const e20=emaSeries(closes,20),e50=emaSeries(closes,50);
+  const price=spot>0?spot:closes[closes.length-1];
+  setNum('price',+price.toFixed(3));setNum('ema20',+e20[e20.length-1].toFixed(3));setNum('prevEma20',+e20[e20.length-2].toFixed(3));
+  setNum('ema50',+e50[e50.length-1].toFixed(3));setNum('prevEma50',+e50[e50.length-2].toFixed(3));
+  setNum('bb',+(closes.slice(-20).reduce((a,b)=>a+b,0)/20).toFixed(3));
+  setNum('rsi',+rsiWilder(closes,9).toFixed(1));setNum('atr',+atrWilder(m5,14).toFixed(3));
+  const win=m5.slice(-97,-1);setNum('res',Math.max(...win.map(x=>x.h)));setNum('sup',Math.min(...win.map(x=>x.l)));
+  try{const h1=await krakenCandles(60);el('h1').value=trendOf(h1.map(x=>x.c))}catch(e){}
+  try{const h4=await krakenCandles(240);el('h4').value=trendOf(h4.map(x=>x.c))}catch(e){}
+  try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
+  el('autoStatus').textContent='公開取得OK：価格は'+(spot>0?'金スポット価格':'PAXG価格')+'、指標はPAXGのローソクから計算（目安）。FXGTと数ドルずれることがあります。';
+  saveInputs();analyze();return true;
+ }catch(e){
+  el('autoStatus').textContent='公開データを取得できませんでした。通信状態を確認してもう一度押してください。';
+  if(manual)alert('公開データを取得できませんでした');
+  return false;
+ }
+}
+el('pubFetch').onclick=()=>fetchPublic(true);
+document.querySelectorAll('input[type=number]').forEach(i=>i.setAttribute('inputmode','decimal'));
 el('paperCsv').onclick=()=>{if(!paper.length){alert('紙サインがありません');return}let csv='\uFEFF方向,日時,エントリー,無効,目標,予定R,状態,結果R\n'+paper.map(x=>[x.dir,x.t,x.entry,x.stop,x.target,x.plannedR.toFixed(2),x.status==='win'?'勝ち':x.status==='loss'?'負け':x.status==='skip'?'対象外':'未判定',x.status==='win'||x.status==='loss'?x.r.toFixed(2):''].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-paper-signals.csv';a.click();URL.revokeObjectURL(a.href)};
 el('paperClear').onclick=()=>{if(confirm('紙サインを全て消去しますか？')){paper=[];paperSave();paperRender()}};
-initPWA();show();paperRender();
+initPWA();show();paperRender();if(el('autoMode').checked)setTimeout(async()=>{const ok=await fetchData(false);if(!ok)fetchPublic(false)},600);
 </script></body></html>
