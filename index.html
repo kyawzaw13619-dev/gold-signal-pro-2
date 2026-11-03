@@ -6,7 +6,7 @@
 <div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5（5分足）専用｜手入力による参考分析</p>
 <section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><div id="reason" class="reason"></div><small id="updated">まだ分析していません</small></section>
 <section class="card"><h2>時間足別の判定（M5／M15／H1）</h2><div id="tfBody"><p class="note">「公開価格で自動取得」か下のボタンを押すと、5分・15分・1時間それぞれの判定を表示します。</p></div><button class="primary" id="tfRun" style="margin-top:11px">公開データで時間足別に判定</button></section>
-<section class="card"><h2>バックテスト（過去検証）</h2><div id="btBody"><p class="note">今の判定ルールを過去のローソクで機械的に回し、時間足ごとの勝率と合計Rを出します。</p></div><button class="primary" id="btRun" style="margin-top:11px">バックテスト実行</button><p class="note">条件：エントリーは各バーの終値、SL＝ATR×2／TP＝ATR×1.5、価格がEMA20からATR×0.5以上離れた「伸びすぎ・落ちすぎ」は入らない（押し目・戻り限定）。4時間以内にTPかSLに触れたら決着（同じバーで両方触れたら負けとして保守的に計算）。上位足の代わりにEMA200の向きで逆張りを除外。PAXGのローソク使用、スプレッドや滑りは含みません。</p></section>
+<section class="card"><h2>バックテスト（過去検証）</h2><div id="btBody"><p class="note">今の判定ルールを過去のローソクで機械的に回し、時間足ごとの勝率と合計Rを出します。</p></div><button class="primary" id="btRun" style="margin-top:11px">バックテスト実行</button><p class="note">条件：エントリーは各バーの終値、SL＝ATR×2.5／TP＝ATR×1、価格がEMA20からATR×0.5以上離れた「伸びすぎ・落ちすぎ」は入らない（押し目・戻り限定）。4時間以内にTPかSLに触れたら決着（同じバーで両方触れたら負けとして保守的に計算）。スプレッド$0.35と、期限切れポジションの含み損益も計上する正直計算です。上位足の代わりにEMA200の向きで逆張りを除外。PAXGのローソク使用、スプレッドや滑りは含みません。</p></section>
 <section class="card"><h2>インジケーター入力</h2><div class="grid">
 <div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
 <div class="field"><label>EMA 20</label><input id="ema20" type="number" step="0.001"></div>
@@ -72,7 +72,7 @@
 </div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
 <section class="card"><h2>時間帯別の成績比較（日本時間）</h2><div id="sessionStats" class="note">分析履歴が増えると、時間帯ごとの記録を比較できます。</div><p class="note">東京時間 9:00〜16:59、ロンドン時間 17:00〜21:59、ニューヨーク時間 22:00〜翌8:59（簡易区分）。夏時間・冬時間や市場の重なりは考慮しない目安です。時刻は分析した端末の日本時間で分類します。</p></section>
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v14（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v15（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
@@ -167,7 +167,7 @@ if(s==='BUY'&&Math.abs(v.price-v.ema20)>v.atr*0.5){s='WAIT';reason='伸びすぎ
 else if(s==='SELL'&&Math.abs(v.price-v.ema20)>v.atr*0.5){s='WAIT';reason='落ちすぎ：EMA20から離れすぎ（戻り待ち）'}
 if(s==='BUY'&&h1==='down')reason='H1は下降：上位足と逆方向、サイズ注意';
 else if(s==='SELL'&&h1==='up')reason='H1は上昇：上位足と逆方向、サイズ注意';
-el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();sendSignalNotice(s,cross);el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('crossView').textContent=cross;el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*2).toFixed(3);el('tp').textContent=(v.atr*1.5).toFixed(3);el('reason').textContent=reason;el('slPrice').textContent=s==='BUY'?(v.price-v.atr*2).toFixed(3):s==='SELL'?(v.price+v.atr*2).toFixed(3):'—';el('tpPrice').textContent=s==='BUY'?(v.price+v.atr*1.5).toFixed(3):s==='SELL'?(v.price-v.atr*1.5).toFixed(3):'—';el('distRes').textContent=resVal!==null?(resVal-v.price).toFixed(3):'—';el('distSup').textContent=supVal!==null?(v.price-supVal).toFixed(3):'—';hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,prevEma20:p20,prevEma50:p50,cross,rsi:v.rsi,atr:v.atr,bb:v.bb,h4,h1,res:resVal,sup:supVal,confirm:confirmed,reason});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist));show()};
+el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();sendSignalNotice(s,cross);el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('crossView').textContent=cross;el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*2.5).toFixed(3);el('tp').textContent=(v.atr*1).toFixed(3);el('reason').textContent=reason;el('slPrice').textContent=s==='BUY'?(v.price-v.atr*2.5).toFixed(3):s==='SELL'?(v.price+v.atr*2.5).toFixed(3):'—';el('tpPrice').textContent=s==='BUY'?(v.price+v.atr*1).toFixed(3):s==='SELL'?(v.price-v.atr*1).toFixed(3):'—';el('distRes').textContent=resVal!==null?(resVal-v.price).toFixed(3):'—';el('distSup').textContent=supVal!==null?(v.price-supVal).toFixed(3):'—';hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,prevEma20:p20,prevEma50:p50,cross,rsi:v.rsi,atr:v.atr,bb:v.bb,h4,h1,res:resVal,sup:supVal,confirm:confirmed,reason});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist));show()};
 el('clear').onclick=()=>{if(confirm('履歴を消去しますか？')){hist=[];localStorage.removeItem('gsp_hist');show()}};
 let paper=JSON.parse(localStorage.getItem('gsp_paper')||'[]');
 function paperSave(){localStorage.setItem('gsp_paper',JSON.stringify(paper))}
@@ -315,8 +315,8 @@ function judgeTF(price,ema20,ema50,ema20p,ema50p,rsi,atr,bb,ctx,res,sup){
   else if(sup>0&&(price-sup)<=atr*0.5){s='WAIT';reason='サポート直下'}
   else{s='SELL';reason=wasDown?'EMA下向き継続':'EMAがデッドクロス'}
  }
- const sl=s==='BUY'?price-atr*2:s==='SELL'?price+atr*2:null;
- const tp=s==='BUY'?price+atr*1.5:s==='SELL'?price-atr*1.5:null;
+ const sl=s==='BUY'?price-atr*2.5:s==='SELL'?price+atr*2.5:null;
+ const tp=s==='BUY'?price+atr*1:s==='SELL'?price-atr*1:null;
  return{s:s,reason:reason,sl:sl,tp:tp};
 }
 function tfIndicators(cs){
@@ -357,15 +357,15 @@ function backtestTF(cs,holdBars){
   const sup=winBars.length?Math.min(...winBars.map(x=>x.l)):0;
   const r=judgeTF(closes[i],e20[i],e50[i],e20[i-1],e50[i-1],rsiS[i],atrS[i],bbS[i],ctx,res,sup);
   if((r.s==='BUY'||r.s==='SELL')&&atrS[i]>0){
-   const dir=r.s==='BUY'?1:-1,entry=closes[i],slD=atrS[i]*2,tpD=atrS[i]*1.5;
+   const dir=r.s==='BUY'?1:-1,entry=closes[i],slD=atrS[i]*2.5,tpD=atrS[i]*1;
    const maxJ=Math.min(cs.length-1,i+holdBars);let done=false;
    for(let j=i+1;j<=maxJ;j++){
-    const hitSL=dir>0?cs[j].l<=entry-slD:cs[j].h>=entry+slD;
-    const hitTP=dir>0?cs[j].h>=entry+tpD:cs[j].l<=entry-tpD;
+    const hitSL=dir>0?cs[j].l<=entry-slD+0.35:cs[j].h>=entry+slD-0.35;
+    const hitTP=dir>0?cs[j].h>=entry+tpD+0.35:cs[j].l<=entry-tpD-0.35;
     if(hitSL){losses++;totalR-=1;trades++;i=j;done=true;break}
     if(hitTP){wins++;totalR+=tpD/slD;trades++;i=j;done=true;break}
    }
-   if(!done)i=maxJ;
+   if(!done){const mtm=dir*(closes[maxJ]-entry)/slD;totalR+=mtm;trades++;if(mtm>0)wins++;else losses++;i=maxJ}
   }else i++;
  }
  return{trades:trades,wins:wins,losses:losses,totalR:totalR,winRate:trades?wins/trades*100:0,bars:cs.length};
