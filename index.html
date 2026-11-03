@@ -5,7 +5,7 @@
 </style></head><body><main class="wrap">
 <div class="brand">Zero with JAME<br>Pro Gold Hunters</div><p class="sub">XAUUSDs専用｜公開データ取得・手入力対応の参考分析</p>
 <section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><div id="reason" class="reason"></div><small id="updated">まだ分析していません</small></section>
-<section class="card"><h2>時間足別の判定（M5／M15／H1）</h2><div id="tfBody"><p class="note">「公開価格で自動取得」か下のボタンを押すと、5分・15分・1時間それぞれの判定を表示します。</p></div><button class="primary" id="tfRun" style="margin-top:11px">公開データで時間足別に判定</button></section><section class="card"><h2>フィボナッチ・ゾーン（マネ版）</h2><div id="fibBody"><p class="note">「公開価格で自動取得」を押すと、直近の波からフィボナッチ戻り水準と「過去によく反転したゾーン」を表示します。</p></div><p class="note">FibAlgoの考え方の簡易再現です：ジグザグで波を取り、直近の波に対する38.2／50／61.8／78.6%戻しと、過去の押し・戻りの反転が多かった比率帯（適応ゾーン）を出します。判定にはまだ組み込んでいません（表示のみ）。</p></section>
+<section class="card"><h2>時間足別の判定（M5／M15／H1）</h2><div id="tfBody"><p class="note">「公開価格で自動取得」か下のボタンを押すと、5分・15分・1時間それぞれの判定を表示します。</p></div><button class="primary" id="tfRun" style="margin-top:11px">公開データで時間足別に判定</button></section>
 <section class="card"><h2>バックテスト（過去検証）</h2><div id="btBody"><p class="note">今の判定ルールを過去のローソクで機械的に回し、時間足ごとの勝率と合計Rを出します。</p></div><button class="primary" id="btRun" style="margin-top:11px">バックテスト実行</button><p class="note">条件：エントリーは各バーの終値、SL＝ATR×2.5／TP＝ATR×1、価格がEMA20からATR×0.5以上離れた「伸びすぎ・落ちすぎ」は入らない（押し目・戻り限定）。4時間以内にTPかSLに触れたら決着（同じバーで両方触れたら負けとして保守的に計算）。スプレッド$0.35と、期限切れポジションの含み損益も計上する正直計算です。上位足の代わりにEMA200の向きで逆張りを除外。PAXGのローソク使用、スプレッドや滑りは含みません。</p></section>
 <section class="card"><h2>インジケーター入力</h2><div class="grid">
 <div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
@@ -26,7 +26,7 @@
 <div class="metric"><span>参考SL幅（ATR×2.5）</span><b id="sl">—</b></div><div class="metric"><span>参考TP幅（ATR×1）</span><b id="tp">—</b></div>
 <div class="metric"><span>SL価格（目安）</span><b id="slPrice">—</b></div><div class="metric"><span>TP価格（目安）</span><b id="tpPrice">—</b></div>
 <div class="metric"><span>レジスタンスまで</span><b id="distRes">—</b></div><div class="metric"><span>サポートまで</span><b id="distSup">—</b></div></div>
-<p class="note">判定ルール（現行版）：土台はBUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。そのうえで、①押し目・戻り限定：価格がEMA20からATR×0.5以上離れている場合は「伸びすぎ・落ちすぎ（押し目待ち）」としてWAIT（追いかけ禁止）。②H4が下降のときのBUY、H4が上昇のときのSELLは「逆張り確認済み」にチェックがないとWAIT（反発の芽どまり）。時間足別の判定では、上位足に逆らう判定は自動でWAITになります。③レジスタンス直下（ATR×0.5以内）のBUY、サポート直下のSELLは節目に近すぎるためWAIT。損切り幅＝ATR×2.5、利確幅＝ATR×1。判定理由は「現在の判定」の下に表示します。1本前のEMA20・EMA50も入力するとクロスを判定します。フィボナッチ・ゾーンは判定には使わず表示のみです。バックテスト済みの目安であり、利益を保証しません。</p></section>
+<p class="note">判定ルール（現行版）：土台はBUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。そのうえで、①押し目・戻り限定：価格がEMA20からATR×0.5以上離れている場合は「伸びすぎ・落ちすぎ（押し目待ち）」としてWAIT（追いかけ禁止）。②H4が下降のときのBUY、H4が上昇のときのSELLは「逆張り確認済み」にチェックがないとWAIT（反発の芽どまり）。時間足別の判定では、上位足に逆らう判定は自動でWAITになります。③レジスタンス直下（ATR×0.5以内）のBUY、サポート直下のSELLは節目に近すぎるためWAIT。損切り幅＝ATR×2.5、利確幅＝ATR×1。判定理由は「現在の判定」の下に表示します。1本前のEMA20・EMA50も入力するとクロスを判定します。バックテスト済みの目安であり、利益を保証しません。</p></section>
 <section class="card"><h2>価格の推移（分析した価格）</h2><canvas id="priceChart" height="180" style="width:100%;display:block"></canvas><p class="note">分析ボタンを押したときの入力価格を表示します。実際のチャートやリアルタイム価格ではありません。</p></section>
 <section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
 <section class="card"><h2>自動取得（PC連携）</h2><p class="note" id="autoStatus">PCのMT5（連携EA）から最新データを取り込めます。</p><label style="display:flex;gap:8px;align-items:flex-start;font-weight:700;line-height:1.4"><input id="autoMode" type="checkbox" style="width:20px;height:20px;margin:1px 0 0">自動モード（開いたら取り込み＋開いている間は60秒ごとに自動更新）</label><button class="primary" id="autoFetch" style="margin-top:11px">最新データを取り込んで分析（PC連携）</button><button class="primary" id="pubFetch" style="margin-top:9px;background:#3f6212">公開価格で自動取得（PCなし）</button><p class="note">取り込む項目：現在価格、EMA20/50（前回も）、RSI、ATR、BB中央、H4/H1の向き、直近レジスタンス／サポート、ドル円。手入力での上書きもできます。公開取得の価格は金のスポット価格、指標は金連動トークンPAXGのローソクから計算した目安です（FXGT価格と数ドルずれることがあります）。</p></section>
@@ -72,7 +72,7 @@
 </div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
 <section class="card"><h2>時間帯別の成績比較（日本時間）</h2><div id="sessionStats" class="note">分析履歴が増えると、時間帯ごとの記録を比較できます。</div><p class="note">東京時間 9:00〜16:59、ロンドン時間 17:00〜21:59、ニューヨーク時間 22:00〜翌8:59（簡易区分）。夏時間・冬時間や市場の重なりは考慮しない目安です。時刻は分析した端末の日本時間で分類します。</p></section>
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">Pro Gold Hunters 改良版 v20（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">Pro Gold Hunters 改良版 v22（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
@@ -202,6 +202,8 @@ function calcRender(){
  const risk=Number(el('calcRisk').value),fx=Number(el('calcFx').value),en=Number(el('calcEntry').value),st=Number(el('calcStop').value);
  if(![risk,fx,en,st].every(Number.isFinite)||en===st||fx<=0||risk<=0){el('calcWidth').textContent='—';el('calcLot').textContent='—';el('calcLoss').textContent='—';el('calcJudge').textContent='入力を確認';return}
  const width=Math.abs(en-st);
+ if(fx<50||fx>300){el('calcWidth').textContent='$'+width.toFixed(2);el('calcLot').textContent='—';el('calcLoss').textContent='—';el('calcJudge').textContent='ドル円レートが異常です（通常は約158）';return}
+ if(width>100){el('calcWidth').textContent='$'+width.toFixed(2);el('calcLot').textContent='—';el('calcLoss').textContent='—';el('calcJudge').textContent='ストップ幅が大きすぎます。価格を確認';return}
  const per001=width*fx;
  const units=Math.floor(risk/per001);
  el('calcWidth').textContent='$'+width.toFixed(2);
@@ -291,7 +293,7 @@ async function fetchPublic(manual){
   try{const h4=await candlesAny(240);window._tfCandles.h4=h4;el('h4').value=trendOf(h4.map(x=>x.c))}catch(e){}
   try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
   el('autoStatus').textContent='公開取得OK（指標の取得先：'+lastSrc+'）：価格は'+(spot>0?'金スポット価格':'PAXG価格')+'、指標はPAXGのローソクから計算（目安）。FXGTと数ドルずれることがあります。［診断：'+diag.join('／')+'］';
-  saveInputsAutomatically();el('analyze').click();judgeAllTF();renderFib();pubRunning=false;return true;
+  saveInputsAutomatically();el('analyze').click();judgeAllTF();pubRunning=false;return true;
  }catch(e){
   el('autoStatus').textContent='公開データを取得できませんでした。［診断：'+diag.join('／')+'／本体×'+(e&&e.message?e.message:'')+'］この画面のスクショをジェイムに送ってください。';
   if(manual)alert('公開データを取得できませんでした');
@@ -325,62 +327,6 @@ function tfIndicators(cs){
  return{price:closes[n-1],ema20:e20[n-1],ema50:e50[n-1],ema20p:e20[n-2],ema50p:e50[n-2],rsi:rsiWilder(closes,9),atr:atrWilder(cs,14),bb:closes.slice(-20).reduce((a,b)=>a+b,0)/20,res:win.length?Math.max(...win.map(x=>x.h)):0,sup:win.length?Math.min(...win.map(x=>x.l)):0};
 }
 
-function zigzagPivots(cs,thr){
- const piv=[];let dir=0,hiI=0,loI=0;
- for(let i=0;i<cs.length;i++){
-  if(cs[i].h>cs[hiI].h)hiI=i;
-  if(cs[i].l<cs[loI].l)loI=i;
-  if(dir>=0&&cs[hiI].h-cs[i].l>=thr){piv.push({t:'H',i:hiI,p:cs[hiI].h});dir=-1;loI=i}
-  else if(dir<=0&&cs[i].h-cs[loI].l>=thr){piv.push({t:'L',i:loI,p:cs[loI].l});dir=1;hiI=i}
- }
- if(dir>=0)piv.push({t:'H',i:hiI,p:cs[hiI].h});else piv.push({t:'L',i:loI,p:cs[loI].l});
- return piv;
-}
-function fibAnalysis(cs){
- const atr=atrWilder(cs,14);if(!atr||cs.length<60)return null;
- const piv=zigzagPivots(cs,atr*1.5);
- if(piv.length<4)return null;
- // 過去の反転比率（適応ゾーン）：脚→戻りの深さ比率を集計
- const ratios=[];
- for(let k=2;k<piv.length;k++){
-  const leg=Math.abs(piv[k-1].p-piv[k-2].p), ret=Math.abs(piv[k].p-piv[k-1].p);
-  if(leg>0)ratios.push(ret/leg);
- }
- const buckets=[[0,0.236],[0.236,0.382],[0.382,0.5],[0.5,0.618],[0.618,0.786],[0.786,1.0]];
- let best=null,bestN=0;
- for(const b of buckets){const n=ratios.filter(r=>r>=b[0]&&r<b[1]).length;if(n>bestN){bestN=n;best=b}}
- // 直近の波（最後の確定ピボット2つ）
- const a=piv[piv.length-2], b=piv[piv.length-1];
- const price=cs[cs.length-1].c;
- const up = a.t==='L' && b.t==='H';
- const hi=Math.max(a.p,b.p), lo=Math.min(a.p,b.p), range=hi-lo;
- if(range<=0)return null;
- const lv={};
- for(const r of [0.382,0.5,0.618,0.786])lv[r]=up?hi-range*r:lo+range*r;
- const pos = up ? (hi-price)/range : (price-lo)/range; // 現在の戻り深さ（0=高値/安値側、1=逆端）
- const zone = best ? (up?[hi-range*best[1],hi-range*best[0]]:[lo+range*best[0],lo+range*best[1]]) : null;
- const inZone = zone ? (price>=zone[0]&&price<=zone[1]) : false;
- return{up:up,hi:hi,lo:lo,lv:lv,pos:pos,zone:zone,bestN:bestN,samples:ratios.length,inZone:inZone,price:price};
-}
-function renderFib(){
- const box=el('fibBody');const C=window._tfCandles;
- if(!C||!C.m15){box.innerHTML='<p class="note">先に「公開価格で自動取得」を押してください。</p>';return}
- let h='';
- for(const [name,cs] of [['M15（15分）',C.m15],['H1（1時間）',C.h1]]){
-  if(!cs){continue}
-  const f=fibAnalysis(cs);
-  if(!f){h+='<div class="entry" style="display:block"><b>'+name+'</b><div><small>波が不足しています</small></div></div>';continue}
-  const lvTxt=Object.keys(f.lv).map(k=>k+': '+f.lv[k].toFixed(2)).join('｜');
-  const zoneTxt=f.zone?('適応ゾーン '+f.zone[0].toFixed(2)+'〜'+f.zone[1].toFixed(2)+'（過去'+f.samples+'回の反転で最多 '+f.bestN+'回）'):'適応ゾーン：データ不足';
-  h+='<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+name+'</b><b>'+(f.up?'上昇の波':'下降の波')+'</b></div>'
-    +'<div style="margin-top:3px"><small>波：'+f.lo.toFixed(2)+' 〜 '+f.hi.toFixed(2)+'｜現在 '+f.price.toFixed(2)+'（戻り深さ '+(f.pos*100).toFixed(0)+'%）</small></div>'
-    +'<div style="margin-top:2px"><small>フィボ '+lvTxt+'</small></div>'
-    +'<div style="margin-top:2px"><small>'+zoneTxt+'</small></div>'
-    +(f.inZone?'<div style="margin-top:4px;color:#f3c969;font-weight:800">今、適応ゾーンの中（押し目・戻りの候補）</div>':'')
-    +'</div>';
- }
- box.innerHTML=h;
-}
 function judgeAllTF(){
  const box=el('tfBody');const C=window._tfCandles;
  if(!C||!C.m5){box.innerHTML='<p class="note">先に「公開価格で自動取得」を押してください。</p>';return}
