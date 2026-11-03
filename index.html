@@ -6,6 +6,7 @@
 <div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5（5分足）専用｜手入力による参考分析</p>
 <section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><div id="reason" class="reason"></div><small id="updated">まだ分析していません</small></section>
 <section class="card"><h2>時間足別の判定（M5／M15／H1）</h2><div id="tfBody"><p class="note">「公開価格で自動取得」か下のボタンを押すと、5分・15分・1時間それぞれの判定を表示します。</p></div><button class="primary" id="tfRun" style="margin-top:11px">公開データで時間足別に判定</button></section>
+<section class="card"><h2>バックテスト（過去検証）</h2><div id="btBody"><p class="note">今の判定ルールを過去のローソクで機械的に回し、時間足ごとの勝率と合計Rを出します。</p></div><button class="primary" id="btRun" style="margin-top:11px">バックテスト実行</button><p class="note">条件：エントリーは各バーの終値、SL＝ATR×1.5／TP＝ATR×2、4時間以内にTPかSLに触れたら決着（同じバーで両方触れたら負けとして保守的に計算）。上位足の代わりにEMA200の向きで逆張りを除外。PAXGのローソク使用、スプレッドや滑りは含みません。</p></section>
 <section class="card"><h2>インジケーター入力</h2><div class="grid">
 <div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
 <div class="field"><label>EMA 20</label><input id="ema20" type="number" step="0.001"></div>
@@ -71,7 +72,7 @@
 </div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
 <section class="card"><h2>時間帯別の成績比較（日本時間）</h2><div id="sessionStats" class="note">分析履歴が増えると、時間帯ごとの記録を比較できます。</div><p class="note">東京時間 9:00〜16:59、ロンドン時間 17:00〜21:59、ニューヨーク時間 22:00〜翌8:59（簡易区分）。夏時間・冬時間や市場の重なりは考慮しない目安です。時刻は分析した端末の日本時間で分類します。</p></section>
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v12（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v13（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
@@ -328,9 +329,62 @@ function judgeAllTF(){
  const a=tfIndicators(C.m5);rows.push(['M5（5分）',judgeTF(a.price,a.ema20,a.ema50,a.ema20p,a.ema50p,a.rsi,a.atr,a.bb,h1ctx,a.res,a.sup),a]);
  if(C.m15){const b=tfIndicators(C.m15);rows.push(['M15（15分）',judgeTF(b.price,b.ema20,b.ema50,b.ema20p,b.ema50p,b.rsi,b.atr,b.bb,h4ctx,b.res,b.sup),b])}
  if(C.h1){const c=tfIndicators(C.h1);rows.push(['H1（1時間）',judgeTF(c.price,c.ema20,c.ema50,c.ema20p,c.ema50p,c.rsi,c.atr,c.bb,h4ctx,c.res,c.sup),c])}
- box.innerHTML=rows.map(r=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+r[0]+'</b><b class="'+r[1].s.toLowerCase()+'">'+r[1].s+'</b></div><div style="margin-top:3px"><small>価格 '+r[2].price.toFixed(2)+'｜EMA20 '+r[2].ema20.toFixed(2)+'／EMA50 '+r[2].ema50.toFixed(2)+'｜RSI '+r[2].rsi.toFixed(0)+'｜ATR '+r[2].atr.toFixed(2)+'</small></div><div style="margin-top:2px"><small>'+r[1].reason+(r[1].sl?'｜SL '+r[1].sl.toFixed(2)+'／TP '+r[1].tp.toFixed(2):'')+'</small></div></div>').join('')+'<p class="note">各時間足とも、その時間足自身のローソクから計算した指標で判定しています（取得先：'+lastSrc+'、PAXGベースの目安）。上位足に逆らう判定は、確認が取れるまでWAITに落としています。</p>';
+ const sigs=rows.map(r=>r[1].s);
+ const allBuy=sigs.length>=2&&sigs.every(x=>x==='BUY'),allSell=sigs.length>=2&&sigs.every(x=>x==='SELL');
+ const buyN=sigs.filter(x=>x==='BUY').length,sellN=sigs.filter(x=>x==='SELL').length;
+ let banner;
+ if(allBuy)banner='<div style="background:rgba(39,197,138,.16);border:1px solid #27c58a;border-radius:12px;padding:12px;text-align:center;font-size:20px;font-weight:800;color:#27c58a;margin-bottom:11px">本命 BUY（全時間足一致）</div>';
+ else if(allSell)banner='<div style="background:rgba(255,100,116,.14);border:1px solid #ff6474;border-radius:12px;padding:12px;text-align:center;font-size:20px;font-weight:800;color:#ff6474;margin-bottom:11px">本命 SELL（全時間足一致）</div>';
+ else banner='<div style="background:rgba(243,201,105,.08);border:1px solid #5a5142;border-radius:12px;padding:12px;text-align:center;font-size:16px;font-weight:800;color:#f3c969;margin-bottom:11px">本命なし（BUY '+buyN+'／SELL '+sellN+'／WAIT '+(sigs.length-buyN-sellN)+'）</div>';
+ box.innerHTML=banner+rows.map(r=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+r[0]+'</b><b class="'+r[1].s.toLowerCase()+'">'+r[1].s+'</b></div><div style="margin-top:3px"><small>価格 '+r[2].price.toFixed(2)+'｜EMA20 '+r[2].ema20.toFixed(2)+'／EMA50 '+r[2].ema50.toFixed(2)+'｜RSI '+r[2].rsi.toFixed(0)+'｜ATR '+r[2].atr.toFixed(2)+'</small></div><div style="margin-top:2px"><small>'+r[1].reason+(r[1].sl?'｜SL '+r[1].sl.toFixed(2)+'／TP '+r[1].tp.toFixed(2):'')+'</small></div></div>').join('')+'<p class="note">各時間足とも、その時間足自身のローソクから計算した指標で判定しています（取得先：'+lastSrc+'、PAXGベースの目安）。上位足に逆らう判定は、確認が取れるまでWAITに落としています。</p>';
 }
 el('tfRun').onclick=()=>{fetchPublic(true)};
+function seriesRSI(closes,p){const out=new Array(closes.length).fill(50);if(closes.length<=p+1)return out;let g=0,l=0;for(let i=1;i<=p;i++){const d=closes[i]-closes[i-1];if(d>0)g+=d;else l-=d}g/=p;l/=p;out[p]=l===0?100:100-100/(1+g/l);for(let i=p+1;i<closes.length;i++){const d=closes[i]-closes[i-1];g=(g*(p-1)+Math.max(d,0))/p;l=(l*(p-1)+Math.max(-d,0))/p;out[i]=l===0?100:100-100/(1+g/l)}return out}
+function seriesATR(cs,p){const out=new Array(cs.length).fill(0);let a=0;for(let i=1;i<cs.length;i++){const tr=Math.max(cs[i].h-cs[i].l,Math.abs(cs[i].h-cs[i-1].c),Math.abs(cs[i].l-cs[i-1].c));if(i<=p)a=(a*(i-1)+tr)/i;else a=(a*(p-1)+tr)/p;out[i]=a}return out}
+function backtestTF(cs,holdBars){
+ const closes=cs.map(x=>x.c);const e20=emaSeries(closes,20),e50=emaSeries(closes,50),e200=emaSeries(closes,200);
+ const rsiS=seriesRSI(closes,9),atrS=seriesATR(cs,14);
+ const bbS=closes.map((v,i)=>i>=19?closes.slice(i-19,i+1).reduce((a,b)=>a+b,0)/20:0);
+ let wins=0,losses=0,totalR=0,trades=0,i=210;
+ while(i<cs.length-1){
+  const ctx=closes[i]>e200[i]?'up':'down';
+  const winBars=cs.slice(Math.max(0,i-96),i);
+  const res=winBars.length?Math.max(...winBars.map(x=>x.h)):0;
+  const sup=winBars.length?Math.min(...winBars.map(x=>x.l)):0;
+  const r=judgeTF(closes[i],e20[i],e50[i],e20[i-1],e50[i-1],rsiS[i],atrS[i],bbS[i],ctx,res,sup);
+  if((r.s==='BUY'||r.s==='SELL')&&atrS[i]>0){
+   const dir=r.s==='BUY'?1:-1,entry=closes[i],slD=atrS[i]*1.5,tpD=atrS[i]*2;
+   const maxJ=Math.min(cs.length-1,i+holdBars);let done=false;
+   for(let j=i+1;j<=maxJ;j++){
+    const hitSL=dir>0?cs[j].l<=entry-slD:cs[j].h>=entry+slD;
+    const hitTP=dir>0?cs[j].h>=entry+tpD:cs[j].l<=entry-tpD;
+    if(hitSL){losses++;totalR-=1;trades++;i=j;done=true;break}
+    if(hitTP){wins++;totalR+=tpD/slD;trades++;i=j;done=true;break}
+   }
+   if(!done)i=maxJ;
+  }else i++;
+ }
+ return{trades:trades,wins:wins,losses:losses,totalR:totalR,winRate:trades?wins/trades*100:0,bars:cs.length};
+}
+let btRunning=false;
+el('btRun').onclick=async()=>{
+ if(btRunning)return;btRunning=true;
+ const box=el('btBody');box.innerHTML='<p class="note">検証中…（過去データを取得しています）</p>';
+ try{
+  const jobs=[['M5（5分）',5,48],['M15（15分）',15,16],['H1（1時間）',60,4]];
+  let html='';
+  for(const job of jobs){
+   try{
+    const cs=await candlesAny(job[1]);
+    if(!cs||cs.length<300){html+='<div class="entry" style="display:block"><b>'+job[0]+'</b><div><small>データ不足で検証できませんでした</small></div></div>';continue}
+    const r=backtestTF(cs,job[2]);
+    html+='<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+job[0]+'</b><b class="'+(r.totalR>=0?'buy':'sell')+'">'+(r.totalR>=0?'+':'')+r.totalR.toFixed(2)+'R</b></div><div style="margin-top:3px"><small>検証バー '+r.bars+'本｜トレード '+r.trades+'回｜勝ち '+r.wins+'／負け '+r.losses+'｜勝率 '+(r.trades?r.winRate.toFixed(1):'—')+'%</small></div></div>';
+   }catch(e){html+='<div class="entry" style="display:block"><b>'+job[0]+'</b><div><small>取得できませんでした</small></div></div>'}
+  }
+  box.innerHTML=html+'<p class="note">合計Rがプラスの時間足が「使える候補」、マイナスはルールの見直し対象です。期間が短い検証は目安として見てください。</p>';
+ }catch(e){box.innerHTML='<p class="note">バックテストに失敗しました。通信状態を確認してもう一度押してください。</p>'}
+ btRunning=false;
+};
 document.querySelectorAll('input[type=number]').forEach(i=>i.setAttribute('inputmode','decimal'));
 el('paperCsv').onclick=()=>{if(!paper.length){alert('紙サインがありません');return}let csv='\uFEFF方向,日時,エントリー,無効,目標,予定R,状態,結果R\n'+paper.map(x=>[x.dir,x.t,x.entry,x.stop,x.target,x.plannedR.toFixed(2),x.status==='win'?'勝ち':x.status==='loss'?'負け':x.status==='skip'?'対象外':'未判定',x.status==='win'||x.status==='loss'?x.r.toFixed(2):''].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-paper-signals.csv';a.click();URL.revokeObjectURL(a.href)};
 el('paperClear').onclick=()=>{if(confirm('紙サインを全て消去しますか？')){paper=[];paperSave();paperRender()}};
