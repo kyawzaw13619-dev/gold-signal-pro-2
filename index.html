@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="GOLD SIGNAL PRO"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101827'/%3E%3Cpolyline points='8,44 22,30 32,38 46,18 56,24' fill='none' stroke='%23f3c969' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><title>GOLD SIGNAL PRO</title>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Gold Hunters"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101827'/%3E%3Cpolyline points='8,44 22,30 32,38 46,18 56,24' fill='none' stroke='%23f3c969' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><title>Zero with JAME — Pro Gold Hunters</title>
 <style>
 *{box-sizing:border-box}body{margin:0;padding:20px 14px 40px;background:#0b1220;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,sans-serif;touch-action:manipulation}button{touch-action:manipulation}.signal{padding:10px 14px;border-radius:12px}.signal.buy{background:rgba(39,197,138,.13)}.signal.sell{background:rgba(255,100,116,.13)}.signal.wait{background:rgba(243,201,105,.10)}.wrap{max-width:680px;margin:auto}.brand{font-size:23px;font-weight:800;color:#f3c969;margin:8px 0}.sub,.note,label,small{color:#9fb0c7}.sub{font-size:13px}.card{background:#131e30;border:1px solid #26364d;border-radius:15px;padding:16px;margin:14px 0}h2{font-size:15px;margin:0 0 13px}.signal{font-size:34px;font-weight:800;color:#f3c969}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field label{display:block;font-size:12px;margin-bottom:6px}.field input{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}button{padding:13px;border:0;border-radius:10px;font-weight:700}.primary{width:100%;margin-top:14px;background:#f3c969;color:#18202c}.secondary{background:#263750;color:white}.danger{background:#482632;color:white}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{background:#0b1423;padding:12px;border-radius:9px}.metric span{display:block;font-size:11px;color:#9fb0c7}.metric b{display:block;margin-top:5px}.entry{display:flex;justify-content:space-between;padding:9px;background:#0b1423;border-radius:8px;margin:7px 0;font-size:12px}.buy{color:#27c58a}.sell{color:#ff6474}.wait{color:#f3c969}.actions{display:flex;gap:8px}.actions button{flex:1}.note{font-size:12px;line-height:1.6}.field select{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}.check{display:flex;gap:9px;align-items:flex-start;margin-top:13px;font-size:13px;line-height:1.5}.check input{width:20px;height:20px;margin-top:1px;flex:none}.reason{font-size:14px;color:#f3c969;margin-top:7px;line-height:1.5}@media(min-width:560px){.metrics{grid-template-columns:repeat(4,1fr)}}
 </style></head><body><main class="wrap">
-<div class="brand">GOLD SIGNAL PRO</div><p class="sub">XAUUSDs · M5（5分足）専用｜手入力による参考分析</p>
+<div class="brand">Zero with JAME<br>Pro Gold Hunters</div><p class="sub">XAUUSDs · M5（5分足）専用｜手入力による参考分析</p>
 <section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><div id="reason" class="reason"></div><small id="updated">まだ分析していません</small></section>
 <section class="card"><h2>時間足別の判定（M5／M15／H1）</h2><div id="tfBody"><p class="note">「公開価格で自動取得」か下のボタンを押すと、5分・15分・1時間それぞれの判定を表示します。</p></div><button class="primary" id="tfRun" style="margin-top:11px">公開データで時間足別に判定</button></section>
 <section class="card"><h2>バックテスト（過去検証）</h2><div id="btBody"><p class="note">今の判定ルールを過去のローソクで機械的に回し、時間足ごとの勝率と合計Rを出します。</p></div><button class="primary" id="btRun" style="margin-top:11px">バックテスト実行</button><p class="note">条件：エントリーは各バーの終値、SL＝ATR×2.5／TP＝ATR×1、価格がEMA20からATR×0.5以上離れた「伸びすぎ・落ちすぎ」は入らない（押し目・戻り限定）。4時間以内にTPかSLに触れたら決着（同じバーで両方触れたら負けとして保守的に計算）。スプレッド$0.35と、期限切れポジションの含み損益も計上する正直計算です。上位足の代わりにEMA200の向きで逆張りを除外。PAXGのローソク使用、スプレッドや滑りは含みません。</p></section>
@@ -72,7 +72,7 @@
 </div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
 <section class="card"><h2>時間帯別の成績比較（日本時間）</h2><div id="sessionStats" class="note">分析履歴が増えると、時間帯ごとの記録を比較できます。</div><p class="note">東京時間 9:00〜16:59、ロンドン時間 17:00〜21:59、ニューヨーク時間 22:00〜翌8:59（簡易区分）。夏時間・冬時間や市場の重なりは考慮しない目安です。時刻は分析した端末の日本時間で分類します。</p></section>
 <section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">GOLD SIGNAL PRO 改良版 v15（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
+<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">Pro Gold Hunters 改良版 v16（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
 <script>
 const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
 const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
@@ -123,7 +123,7 @@ async function showAppNotification(title,body){
 async function sendSignalNotice(signal,cross){
  if(!('Notification' in window)||Notification.permission!=='granted'||signal==='WAIT')return;
  const body=cross==='判定不可'?'分析結果：'+signal:'分析結果：'+signal+'／'+cross;
- const ok=await showAppNotification('GOLD SIGNAL PRO｜'+signal,body);
+ const ok=await showAppNotification('Pro Gold Hunters｜'+signal,body);
  if(!ok)el('notifyStatus').textContent='通知を表示できませんでした。ホーム画面アプリで開いているか確認してください。';
 }
 el('enableNotify').onclick=async()=>{
@@ -131,7 +131,7 @@ el('enableNotify').onclick=async()=>{
  if(!isStandalone){el('notifyStatus').textContent='iPhoneではホーム画面に追加したアイコンから開いてください。';return}
  try{if(!swRegistration)await initPWA();if(!swRegistration){el('notifyStatus').textContent='通知の準備ができていません。再読み込みしてください。';return}
  const permission=await Notification.requestPermission();updateNotifyStatus();
- if(permission==='granted'){const ok=await showAppNotification('GOLD SIGNAL PRO','通知設定ができました。BUY／SELLの分析時にお知らせします。');el('notifyStatus').textContent=ok?'通知は許可されています。テスト通知を送りました。ホーム画面に戻って表示を確認してください。':'通知を表示できませんでした。ホーム画面アプリで開いているか確認してください。';}
+ if(permission==='granted'){const ok=await showAppNotification('Pro Gold Hunters','通知設定ができました。BUY／SELLの分析時にお知らせします。');el('notifyStatus').textContent=ok?'通知は許可されています。テスト通知を送りました。ホーム画面に戻って表示を確認してください。':'通知を表示できませんでした。ホーム画面アプリで開いているか確認してください。';}
  }catch(e){el('notifyStatus').textContent='通知の設定に失敗しました。iPhoneの設定を確認してください。'}
 };
 function show(){
