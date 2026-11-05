@@ -1,423 +1,414 @@
-<!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101827"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Gold Hunters"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101827'/%3E%3Cpolyline points='8,44 22,30 32,38 46,18 56,24' fill='none' stroke='%23f3c969' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><title>Zero with JAME — Pro Gold Hunters</title>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="コちゃんトレード中">
+<title>コちゃんトレード中 — Gold Signal Pro Ultra v2</title>
 <style>
-*{box-sizing:border-box}body{margin:0;padding:20px 14px 40px;background:#0b1220;color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,sans-serif;touch-action:manipulation}button{touch-action:manipulation}.signal{padding:10px 14px;border-radius:12px}.signal.buy{background:rgba(39,197,138,.13)}.signal.sell{background:rgba(255,100,116,.13)}.signal.wait{background:rgba(243,201,105,.10)}.wrap{max-width:680px;margin:auto}.brand{font-size:23px;font-weight:800;color:#f3c969;margin:8px 0}.sub,.note,label,small{color:#9fb0c7}.sub{font-size:13px}.card{background:#131e30;border:1px solid #26364d;border-radius:15px;padding:16px;margin:14px 0}h2{font-size:15px;margin:0 0 13px}.signal{font-size:34px;font-weight:800;color:#f3c969}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field label{display:block;font-size:12px;margin-bottom:6px}.field input{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}button{padding:13px;border:0;border-radius:10px;font-weight:700}.primary{width:100%;margin-top:14px;background:#f3c969;color:#18202c}.secondary{background:#263750;color:white}.danger{background:#482632;color:white}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{background:#0b1423;padding:12px;border-radius:9px}.metric span{display:block;font-size:11px;color:#9fb0c7}.metric b{display:block;margin-top:5px}.entry{display:flex;justify-content:space-between;padding:9px;background:#0b1423;border-radius:8px;margin:7px 0;font-size:12px}.buy{color:#27c58a}.sell{color:#ff6474}.wait{color:#f3c969}.actions{display:flex;gap:8px}.actions button{flex:1}.note{font-size:12px;line-height:1.6}.field select{width:100%;padding:12px;border-radius:9px;border:1px solid #33445d;background:#0b1423;color:white;font-size:16px}.check{display:flex;gap:9px;align-items:flex-start;margin-top:13px;font-size:13px;line-height:1.5}.check input{width:20px;height:20px;margin-top:1px;flex:none}.reason{font-size:14px;color:#f3c969;margin-top:7px;line-height:1.5}@media(min-width:560px){.metrics{grid-template-columns:repeat(4,1fr)}}
-.charttf{display:flex;gap:6px;margin-bottom:9px}.charttf button{flex:1;padding:7px 0;border-radius:9px;border:1px solid #26364d;background:#0e1728;color:#9fb0c7;font-weight:700;font-size:13px}.charttf button.on{background:#f3c969;color:#101827;border-color:#f3c969}</style></head><body><main class="wrap">
-<div class="brand">Zero with JAME<br>Pro Gold Hunters</div><p class="sub">XAUUSDs専用｜公開データ取得・手入力対応の参考分析</p>
-<section class="card"><small>現在の判定</small><div id="signal" class="signal wait">WAIT</div><div id="reason" class="reason"></div><small id="updated">まだ分析していません</small></section>
-<section class="card"><h2 id="chartTitle">チャート M5（5分）</h2><div class="charttf"><button id="ctf5" class="on">M5</button><button id="ctf15">M15</button><button id="ctf60">H1</button></div><canvas id="mainChart" height="260" style="width:100%;display:block"></canvas><p class="note">ローソク足（直近60本）にEMA20（金線）・EMA50（青線）と、直近の高値・安値（破線）を重ねています。公開データ（PAXG）のため、FXGTと数ドルずれることがあります。</p></section>
-<section class="card"><h2>時間足別の判定（M5／M15／H1）</h2><div id="tfBody"><p class="note">「公開価格で自動取得」か下のボタンを押すと、5分・15分・1時間それぞれの判定を表示します。</p></div><button class="primary" id="tfRun" style="margin-top:11px">公開データで時間足別に判定</button></section>
-<section class="card"><h2>バックテスト（過去検証）</h2><div id="btBody"><p class="note">今の判定ルールを過去のローソクで機械的に回し、時間足ごとの勝率と合計Rを出します。</p></div><button class="primary" id="btRun" style="margin-top:11px">バックテスト実行</button><p class="note">条件：エントリーは各バーの終値、SL＝ATR×2.5／TP＝ATR×1、価格がEMA20からATR×0.5以上離れた「伸びすぎ・落ちすぎ」は入らない（押し目・戻り限定）。4時間以内にTPかSLに触れたら決着（同じバーで両方触れたら負けとして保守的に計算）。スプレッド$0.35と、期限切れポジションの含み損益も計上する正直計算です。上位足の代わりにEMA200の向きで逆張りを除外。PAXGのローソク使用、スプレッドや滑りは含みません。</p></section>
-<section class="card"><h2>インジケーター入力</h2><div class="grid">
-<div class="field"><label>現在価格（Bid）</label><input id="price" type="number" step="0.001" placeholder="価格"></div>
-<div class="field"><label>EMA 20</label><input id="ema20" type="number" step="0.001"></div>
-<div class="field"><label>EMA 50</label><input id="ema50" type="number" step="0.001"></div>
-<div class="field"><label>1本前のEMA 20（任意）</label><input id="prevEma20" type="number" step="0.001" placeholder="任意"></div>
-<div class="field"><label>1本前のEMA 50（任意）</label><input id="prevEma50" type="number" step="0.001" placeholder="任意"></div>
-<div class="field"><label>RSI 9</label><input id="rsi" type="number" step="0.01"></div>
-<div class="field"><label>ATR 14</label><input id="atr" type="number" step="0.001"></div>
-<div class="field"><label>BB 中央線</label><input id="bb" type="number" step="0.001"></div>
-<div class="field"><label>H4の方向（上位足）</label><select id="h4"><option value="down">下降</option><option value="range">レンジ</option><option value="up">上昇</option></select></div>
-<div class="field"><label>H1の方向</label><select id="h1"><option value="down">下降</option><option value="range">レンジ</option><option value="up">上昇</option></select></div>
-<div class="field"><label>直近レジスタンス（任意）</label><input id="res" type="number" step="0.001" placeholder="任意"></div>
-<div class="field"><label>直近サポート（任意）</label><input id="sup" type="number" step="0.001" placeholder="任意"></div>
-</div><label class="check"><input type="checkbox" id="confirm"><span>逆張り確認済み：節目をM15実体で超えて終えた、または節目を取り戻した後の押し目が止まった（下降中の買い／上昇中の売りに必要）</span></label><button class="primary" id="analyze">分析する</button></section>
-<section class="card"><h2>分析データ</h2><div class="metrics">
-<div class="metric"><span>EMA方向</span><b id="trend">—</b></div><div class="metric"><span>EMAクロス</span><b id="crossView">—</b></div><div class="metric"><span>RSI 9</span><b id="rsiView">—</b></div>
-<div class="metric"><span>参考SL幅（ATR×2.5）</span><b id="sl">—</b></div><div class="metric"><span>参考TP幅（ATR×1）</span><b id="tp">—</b></div>
-<div class="metric"><span>SL価格（目安）</span><b id="slPrice">—</b></div><div class="metric"><span>TP価格（目安）</span><b id="tpPrice">—</b></div>
-<div class="metric"><span>レジスタンスまで</span><b id="distRes">—</b></div><div class="metric"><span>サポートまで</span><b id="distSup">—</b></div></div>
-<p class="note">判定ルール（現行版）：土台はBUY＝価格がEMA20・EMA50・BB中央線より上、EMA20＞EMA50、RSI 50〜70。SELL＝逆方向、RSI 30〜50。それ以外はWAIT。そのうえで、①押し目・戻り限定：価格がEMA20からATR×0.5以上離れている場合は「伸びすぎ・落ちすぎ（押し目待ち）」としてWAIT（追いかけ禁止）。②H4が下降のときのBUY、H4が上昇のときのSELLは「逆張り確認済み」にチェックがないとWAIT（反発の芽どまり）。時間足別の判定では、上位足に逆らう判定は自動でWAITになります。③レジスタンス直下（ATR×0.5以内）のBUY、サポート直下のSELLは節目に近すぎるためWAIT。損切り幅＝ATR×2.5、利確幅＝ATR×1。判定理由は「現在の判定」の下に表示します。1本前のEMA20・EMA50も入力するとクロスを判定します。バックテスト済みの目安であり、利益を保証しません。</p></section>
+:root { --bg:#0b1220; --card:#131e30; --gold:#f3c969; --green:#27c58a; --red:#ff6474; --blue:#7cc4ff; --muted:#9fb0c7; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:#f4f7fb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:12px 10px 60px;line-height:1.4}
+.wrap{max-width:480px;margin:auto}
+.brand{font-size:22px;font-weight:800;color:var(--gold);text-align:center;margin:8px 0 4px}
+.sub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:12px}
+.card{background:var(--card);border:1px solid #26364d;border-radius:16px;padding:16px;margin:10px 0}
+.signal-big{font-size:42px;font-weight:900;text-align:center;padding:12px;border-radius:12px;letter-spacing:1px}
+.signal-big.buy{background:rgba(39,197,138,.15);color:var(--green)}
+.signal-big.sell{background:rgba(255,100,116,.15);color:var(--red)}
+.signal-big.wait{background:rgba(243,201,105,.12);color:var(--gold)}
+.signal-big.watch{background:rgba(124,196,255,.12);color:var(--blue)}
+.score{text-align:center;font-size:28px;font-weight:800;color:var(--gold);margin:8px 0}
+.reason{text-align:center;color:var(--gold);font-size:13px;min-height:36px;line-height:1.4}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.metric{background:#0b1423;padding:10px;border-radius:10px;font-size:12px}
+.metric span{color:var(--muted);display:block;font-size:11px}
+.metric b{display:block;margin-top:2px;font-size:15px}
+button{width:100%;padding:14px;border:0;border-radius:12px;font-weight:700;font-size:16px;background:var(--gold);color:#18202c;margin-top:8px;cursor:pointer}
+button.secondary{background:#263750;color:white}
+.note{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+.status{font-size:12px;text-align:center;color:var(--muted);margin-top:6px}
+.live{color:var(--green)}
+.err{color:var(--red)}
+canvas{width:100%;height:200px;background:#0b1423;border-radius:10px;margin-top:8px}
+.history-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #26364d;font-size:13px}
+.tf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tf-box{background:#0b1423;padding:10px;border-radius:10px;text-align:center}
+.tf-box .label{font-size:11px;color:var(--muted)}
+.tf-box .val{font-size:18px;font-weight:700;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">コちゃんトレード中</div>
+  <div class="sub">XAUUSD Ultra v2｜MACD・Stoch・H1/H4｜通知履歴強化</div>
 
-<section class="card"><h2>判定履歴</h2><div id="history" class="note">履歴はまだありません。</div><div class="actions"><button class="secondary" id="csv">CSV保存</button><button class="danger" id="clear">履歴消去</button></div></section>
-<section class="card"><h2>自動取得（PC連携）</h2><p class="note" id="autoStatus">PCのMT5（連携EA）から最新データを取り込めます。</p><label style="display:flex;gap:8px;align-items:flex-start;font-weight:700;line-height:1.4"><input id="autoMode" type="checkbox" style="width:20px;height:20px;margin:1px 0 0">自動モード（開いたら取り込み＋開いている間は60秒ごとに自動更新）</label><button class="primary" id="autoFetch" style="margin-top:11px">最新データを取り込んで分析（PC連携）</button><button class="primary" id="pubFetch" style="margin-top:9px;background:#3f6212">公開価格で自動取得（PCなし）</button><p class="note">取り込む項目：現在価格、EMA20/50（前回も）、RSI、ATR、BB中央、H4/H1の向き、直近レジスタンス／サポート、ドル円。手入力での上書きもできます。公開取得の価格は金のスポット価格、指標は金連動トークンPAXGのローソクから計算した目安です（FXGT価格と数ドルずれることがあります）。</p></section>
-<section class="card"><h2>分析設定</h2><div class="metrics"><div class="metric"><span>通貨ペア</span><b>XAUUSDs</b></div><div class="metric"><span>時間足</span><b>M5（5分足）</b></div><div class="metric"><span>EMA</span><b>20 / 50</b></div><div class="metric"><span>RSI</span><b>9</b></div></div><p class="note">FXGT OptimusのXAUUSDsを想定した設定です。価格・インジケーター値はMT5から自動取得せず、手入力します。</p><div class="actions"><button class="secondary" id="saveSettings">入力値を保存</button><button class="secondary" id="loadSettings">保存値を呼び出す</button></div><p class="note" id="settingsStatus">入力値はこのiPhoneのブラウザ内に保存できます。</p></section>
-<section class="card"><h2>通知設定</h2><p class="note" id="notifyStatus">通知はまだ設定されていません。</p><button class="secondary" id="enableNotify">通知を有効にする</button><p class="note" id="pwaMode"></p><p class="note">このページを開いて分析したときに、BUY／SELLの結果を通知する試作機能です。ページを閉じている間の自動通知やMT5からの通知ではありません。iPhoneでは通知に対応した環境・設定が必要です。</p></section>
-<section class="card"><h2>ロット計算（リスク管理）</h2><div class="grid">
-<div class="field"><label>口座残高（円）</label><input id="calcBalance" type="number" step="1" value="10000"></div>
-<div class="field"><label>1回の許容損失（円）</label><input id="calcRisk" type="number" step="1" value="1000"></div>
-<div class="field"><label>ドル円レート</label><input id="calcFx" type="number" step="0.01" value="158"></div>
-<div class="field"><label>エントリー価格</label><input id="calcEntry" type="number" step="0.001"></div>
-<div class="field"><label>ストップ価格</label><input id="calcStop" type="number" step="0.001"></div>
-</div><button class="primary" id="calcRun">計算する</button>
-<button class="secondary" id="calcFromSignal" style="width:100%;margin-top:9px">判定の価格を入れる（エントリー／SL）</button>
-<div class="metrics" style="margin-top:13px">
-<div class="metric"><span>ストップ幅</span><b id="calcWidth">—</b></div>
-<div class="metric"><span>推奨ロット</span><b id="calcLot">—</b></div>
-<div class="metric"><span>想定損失（円）</span><b id="calcLoss">—</b></div>
-<div class="metric"><span>判定</span><b id="calcJudge">—</b></div>
-</div><p class="note">FXGTスタンダード想定：0.01ロット＝1オンスなので、$1の値動き＝$1損益。再開ルール中はロットを0.01固定とし、0.01でも許容損失を超える場合は「見送り推奨」を表示します（そのトレードは入らない前提）。</p></section>
-<section class="card"><h2>紙サイン採点（20回検証）</h2>
-<div class="metrics">
-<div class="metric"><span>採点済み</span><b id="paperCount">0 / 20</b></div>
-<div class="metric"><span>合計R</span><b id="paperTotalR">—</b></div>
-<div class="metric"><span>勝率</span><b id="paperWinRate">—</b></div>
-<div class="metric"><span>未判定</span><b id="paperOpen">0</b></div>
+  <div class="card">
+    <div id="signal" class="signal-big wait">WAIT</div>
+    <div class="score" id="score">-- / 100</div>
+    <div class="reason" id="reason">データを取得中…</div>
+    <div class="status" id="status">接続中…</div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span>現在価格</span>
+      <b id="price" style="font-size:24px;color:var(--gold)">--</b>
+    </div>
+    <canvas id="chart"></canvas>
+    <div class="metrics">
+      <div class="metric"><span>EMA20</span><b id="ema20">--</b></div>
+      <div class="metric"><span>EMA50</span><b id="ema50">--</b></div>
+      <div class="metric"><span>RSI(9)</span><b id="rsi">--</b></div>
+      <div class="metric"><span>ATR(14)</span><b id="atr">--</b></div>
+      <div class="metric"><span>MACD</span><b id="macd">--</b></div>
+      <div class="metric"><span>Stoch %K</span><b id="stoch">--</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;margin-bottom:6px">マルチタイムフレーム</div>
+    <div class="tf-grid">
+      <div class="tf-box"><div class="label">M5</div><div class="val" id="tfM5">--</div></div>
+      <div class="tf-box"><div class="label">H1</div><div class="val" id="tfH1">--</div></div>
+      <div class="tf-box"><div class="label">H4</div><div class="val" id="tfH4">--</div></div>
+      <div class="tf-box"><div class="label">一致度</div><div class="val" id="tfAlign">--</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="metrics">
+      <div class="metric"><span>方向</span><b id="dir">--</b></div>
+      <div class="metric"><span>強度</span><b id="strength">--</b></div>
+      <div class="metric"><span>推奨SL</span><b id="sl">--</b></div>
+      <div class="metric"><span>推奨TP</span><b id="tp">--</b></div>
+    </div>
+    <button id="refresh">最新データを取得</button>
+    <button class="secondary" id="auto">自動更新 OFF</button>
+    <button class="secondary" id="notifyBtn">通知を有効化</button>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-weight:700">判定履歴</span>
+      <button class="secondary" style="width:auto;padding:6px 12px;margin:0;font-size:12px" id="clearHist">消去</button>
+    </div>
+    <div id="history">履歴はまだありません</div>
+    <p class="note">BUY/SELL判定時に自動記録。通知許可時はシグナル変化で通知します。</p>
+  </div>
 </div>
-<div class="grid" style="margin-top:13px">
-<div class="field"><label>方向</label><select id="paperDir"><option value="BUY">BUY（買い）</option><option value="SELL">SELL（売り）</option></select></div>
-<div class="field"><label>エントリー</label><input id="paperEntry" type="number" step="0.001"></div>
-<div class="field"><label>無効（ストップ）</label><input id="paperStop" type="number" step="0.001"></div>
-<div class="field"><label>目標</label><input id="paperTarget" type="number" step="0.001"></div>
-</div><button class="primary" id="paperAdd">紙サインを登録</button>
-<button class="secondary" id="paperFromSignal" style="width:100%;margin-top:9px">今の判定を紙サインに入れる</button>
-<div id="paperList" style="margin-top:11px"></div>
-<div class="actions" style="margin-top:11px"><button class="secondary" id="paperCsv">紙サインCSV保存</button><button class="danger" id="paperClear">紙サイン消去</button></div>
-<p class="note">ルール：目標が先に到達＝勝ち（予定Rを加算）、無効が先に到達＝負け（−1R）、どちらも届かなければ未約定・対象外。20回分たまったら合計Rで判定します（プラスなら使える、マイナスなら見直し）。</p></section>
-<section class="card"><h2>通知履歴</h2><div id="noticeHistory" class="note">BUY／SELLの通知履歴はまだありません。</div><p class="note">この端末で分析したBUY／SELLの記録です。実際のMT5相場を監視しているわけではありません。</p></section>
-<section class="card"><h2>分析回数・検証成績</h2><div class="metrics">
-<div class="metric"><span>BUY回数</span><b id="buyCount">0</b></div>
-<div class="metric"><span>SELL回数</span><b id="sellCount">0</b></div>
-<div class="metric"><span>WAIT回数</span><b id="waitCount">0</b></div>
-<div class="metric"><span>検証勝率</span><b id="winRate">—</b></div>
-</div><p class="note">勝率は、シグナル後の値動きを自分で確認して「勝ち／負け」を記録した分だけで計算します。未判定は含みません。</p></section>
-<section class="card"><h2>時間帯別の成績比較（日本時間）</h2><div id="sessionStats" class="note">分析履歴が増えると、時間帯ごとの記録を比較できます。</div><p class="note">東京時間 9:00〜16:59、ロンドン時間 17:00〜21:59、ニューヨーク時間 22:00〜翌8:59（簡易区分）。夏時間・冬時間や市場の重なりは考慮しない目安です。時刻は分析した端末の日本時間で分類します。</p></section>
-<section class="card"><h2>RSI帯ごとの成績比較</h2><div id="rsiStats" class="note">分析履歴が増えると、RSI帯ごとの記録を比較できます。</div><p class="note">各帯の「勝率」は、勝ち・負けを手動記録したBUY／SELLだけで計算します。件数が少ないうちは参考程度に見てね。</p></section>
-<p class="note">このデモはMT5・FXGTと未接続です。数値を手入力してください。自動注文は行いません。</p><p class="note" style="text-align:center;margin-top:18px">Pro Gold Hunters 改良版 v23（判定ルール改良／ロット計算／紙サイン採点／通知強化／PC連携／公開自動取得）</p></main>
+
 <script>
-const ids=['price','ema20','ema50','rsi','atr','bb'];let hist=JSON.parse(localStorage.getItem('gsp_hist')||'[]');const el=id=>document.getElementById(id);
-const settingIds=['price','ema20','ema50','prevEma20','prevEma50','rsi','atr','bb','h4','h1','res','sup'];
-// 入力するたびに端末内へ自動保存し、次回起動時に復元する
-function saveInputsAutomatically(){const values={};settingIds.forEach(id=>values[id]=el(id).value);try{localStorage.setItem('gsp_inputs',JSON.stringify(values));el('settingsStatus').textContent='入力値を自動保存しました。';}catch(e){el('settingsStatus').textContent='自動保存できませんでした。';}}
-function restoreInputsAutomatically(){try{const saved=JSON.parse(localStorage.getItem('gsp_inputs')||'null');if(saved){settingIds.forEach(id=>{if(saved[id]!==undefined)el(id).value=saved[id];});el('settingsStatus').textContent='前回の入力値を復元しました。';}}catch(e){el('settingsStatus').textContent='保存値を読み込めませんでした。';}}
-settingIds.forEach(id=>{el(id).addEventListener('input',saveInputsAutomatically);el(id).addEventListener('change',saveInputsAutomatically);});
-restoreInputsAutomatically();
-el('saveSettings').onclick=()=>{const values={};settingIds.forEach(id=>values[id]=el(id).value);localStorage.setItem('gsp_inputs',JSON.stringify(values));el('settingsStatus').textContent='入力値をこの端末に保存しました。';};
-el('loadSettings').onclick=()=>{const saved=JSON.parse(localStorage.getItem('gsp_inputs')||'null');if(!saved){el('settingsStatus').textContent='保存された入力値はありません。';return}settingIds.forEach(id=>el(id).value=saved[id]??'');el('settingsStatus').textContent='保存した入力値を呼び出しました。';};
-function syncChartBtns(){const tf=window._chartTf||'m5';el('ctf5').className=tf==='m5'?'on':'';el('ctf15').className=tf==='m15'?'on':'';el('ctf60').className=tf==='h1'?'on':''}
-function drawMainChart(){
- const cv=el('mainChart');if(!cv)return;const C=window._tfCandles;const tf=window._chartTf||'m5';const cs=C&&C[tf];
- const dpr=window.devicePixelRatio||1;const W=cv.clientWidth||340,H=260;
- cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
- const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
- const ttl=el('chartTitle');if(ttl)ttl.textContent='チャート '+({m5:'M5（5分）',m15:'M15（15分）',h1:'H1（1時間）'})[tf];
- if(!cs||cs.length<10){ctx.fillStyle='#9fb0c7';ctx.font='13px sans-serif';ctx.fillText('「公開価格で自動取得」を押すとチャートが表示されます',10,30);return}
- const view=cs.slice(-60);const off=cs.length-view.length;
- let lo=Infinity,hi=-Infinity;for(const k of view){lo=Math.min(lo,k.l);hi=Math.max(hi,k.h)}
- const closes=cs.map(x=>x.c);const e20=emaSeries(closes,20),e50=emaSeries(closes,50);
- let ind=null;try{ind=tfIndicators(cs)}catch(e){}
- const pad=(hi-lo)*0.08||1;lo-=pad;hi+=pad;
- const top=6,bot=18,rpad=48,iw=W-rpad,ih=H-top-bot,step=iw/view.length;
- const X=i=>step*(i+0.5);const Y=v=>top+ih*(1-(v-lo)/(hi-lo));
- ctx.font='10px sans-serif';
- for(let g=0;g<=3;g++){const v=lo+(hi-lo)*g/3;const y=Y(v);ctx.strokeStyle='rgba(159,176,199,0.14)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(iw,y);ctx.stroke();ctx.fillStyle='#9fb0c7';ctx.fillText(v.toFixed(1),iw+5,y+3)}
- function dash(v,color,label){if(v>lo&&v<hi){const y=Y(v);ctx.strokeStyle=color;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(iw,y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=color;ctx.fillText(label,4,y-3)}}
- if(ind&&ind.res)dash(ind.res,'rgba(255,100,116,0.6)','高値 '+ind.res.toFixed(1));
- if(ind&&ind.sup)dash(ind.sup,'rgba(39,197,138,0.6)','安値 '+ind.sup.toFixed(1));
- for(let i=0;i<view.length;i++){const k=view[i];const up=k.c>=k.o;ctx.strokeStyle=up?'#27c58a':'#ff6474';ctx.fillStyle=ctx.strokeStyle;const cx=X(i);ctx.beginPath();ctx.moveTo(cx,Y(k.h));ctx.lineTo(cx,Y(k.l));ctx.stroke();const bw=Math.max(2,step*0.62);const y1=Y(Math.max(k.o,k.c)),y2=Y(Math.min(k.o,k.c));ctx.fillRect(cx-bw/2,y1,bw,Math.max(1,y2-y1))}
- function line(arr,color){ctx.strokeStyle=color;ctx.lineWidth=1.4;ctx.beginPath();let st=false;for(let i=0;i<view.length;i++){const v=arr[off+i];if(!Number.isFinite(v))continue;const x=X(i),y=Y(v);if(!st){ctx.moveTo(x,y);st=true}else ctx.lineTo(x,y)}ctx.stroke();ctx.lineWidth=1}
- line(e20,'#f3c969');line(e50,'#7cc4ff');
- const last=view[view.length-1].c;const ly=Y(last);ctx.strokeStyle='rgba(243,201,105,0.7)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(0,ly);ctx.lineTo(iw,ly);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#f3c969';ctx.fillText(last.toFixed(2),iw+5,ly+3);
- ctx.fillStyle='#9fb0c7';
- function tlab(i){const t=view[i].t;if(!t)return'';return new Date(t*1000).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Tokyo'})}
- ctx.fillText(tlab(0),2,H-4);ctx.fillText(tlab(Math.floor(view.length/2)),Math.max(2,iw/2-14),H-4);ctx.fillText(tlab(view.length-1),Math.max(2,iw-32),H-4);
-}
-el('ctf5').onclick=()=>{window._chartTf='m5';syncChartBtns();drawMainChart()};
-el('ctf15').onclick=()=>{window._chartTf='m15';syncChartBtns();drawMainChart()};
-el('ctf60').onclick=()=>{window._chartTf='h1';syncChartBtns();drawMainChart()};
-let swRegistration=null;
-const isStandalone=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
-async function initPWA(){
- const mode=el('pwaMode');
- if(!('serviceWorker' in navigator)){mode.textContent='この環境ではService Workerに対応していません。';return}
- try{swRegistration=await navigator.serviceWorker.register('./sw.js');await navigator.serviceWorker.ready;mode.textContent=isStandalone?'ホーム画面アプリとして起動中です。':'通知を試すにはホーム画面のアイコンから開いてください。';updateNotifyStatus();}
- catch(e){mode.textContent='通知の準備に失敗しました。ページを再読み込みしてください。';}
-}
-function updateNotifyStatus(){
- const supported='Notification' in window;
- el('notifyStatus').textContent=!supported?'この環境は通知APIに対応していません。':Notification.permission==='granted'?'通知は許可されています。':Notification.permission==='denied'?'通知がブロックされています。iPhoneの設定を確認してください。':'通知の許可が必要です。';
-}
-async function showAppNotification(title,body){
- // 3段構えで通知を出す：SW経由 → 登録済みSW → 通常の通知API
- try{
-  const reg=swRegistration||await navigator.serviceWorker.ready;
-  if(reg&&reg.active){reg.active.postMessage({type:'SHOW_NOTIFICATION',title:title,message:body});return true}
- }catch(e){}
- try{
-  const reg=swRegistration||await navigator.serviceWorker.ready;
-  if(reg){await reg.showNotification(title,{body:body,tag:'gsp-signal',icon:'./icon-192.png',badge:'./icon-192.png'});return true}
- }catch(e){}
- try{new Notification(title,{body:body,tag:'gsp-signal',icon:'./icon-192.png'});return true}catch(e){}
- return false;
-}
-async function sendSignalNotice(signal,cross){
- if(!('Notification' in window)||Notification.permission!=='granted'||signal==='WAIT')return;
- const body=cross==='判定不可'?'分析結果：'+signal:'分析結果：'+signal+'／'+cross;
- const ok=await showAppNotification('Pro Gold Hunters｜'+signal,body);
- if(!ok)el('notifyStatus').textContent='通知を表示できませんでした。ホーム画面アプリで開いているか確認してください。';
-}
-el('enableNotify').onclick=async()=>{
- if(!('Notification' in window)){el('notifyStatus').textContent='この環境は通知APIに対応していません。';return}
- if(!isStandalone){el('notifyStatus').textContent='iPhoneではホーム画面に追加したアイコンから開いてください。';return}
- try{if(!swRegistration)await initPWA();if(!swRegistration){el('notifyStatus').textContent='通知の準備ができていません。再読み込みしてください。';return}
- const permission=await Notification.requestPermission();updateNotifyStatus();
- if(permission==='granted'){const ok=await showAppNotification('Pro Gold Hunters','通知設定ができました。BUY／SELLの分析時にお知らせします。');el('notifyStatus').textContent=ok?'通知は許可されています。テスト通知を送りました。ホーム画面に戻って表示を確認してください。':'通知を表示できませんでした。ホーム画面アプリで開いているか確認してください。';}
- }catch(e){el('notifyStatus').textContent='通知の設定に失敗しました。iPhoneの設定を確認してください。'}
-};
-function show(){
- const count=s=>hist.filter(x=>x.s===s).length;
- const done=hist.filter(x=>x.result==='win'||x.result==='loss'),wins=done.filter(x=>x.result==='win').length;
- el('buyCount').textContent=count('BUY');el('sellCount').textContent=count('SELL');el('waitCount').textContent=count('WAIT');
- const notices=hist.filter(x=>x.s==='BUY'||x.s==='SELL').slice(0,10);el('noticeHistory').innerHTML=notices.length?notices.map(x=>'<div class="entry"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>').join(''):'BUY／SELLの通知履歴はまだありません。';
- el('winRate').textContent=done.length?(wins/done.length*100).toFixed(1)+'%':'—';
- const sessions=[['東京時間',9,17],['ロンドン時間',17,22],['ニューヨーク時間',22,9]];
- el('sessionStats').innerHTML=sessions.map(([name,start,end])=>{const group=hist.filter(x=>{if(x.s==='WAIT')return false;const d=new Date(x.t);const hour=d.getHours();return start<end?(hour>=start&&hour<end):(hour>=start||hour<end)});const judged=group.filter(x=>x.result==='win'||x.result==='loss');const wins=judged.filter(x=>x.result==='win').length;return '<div class="entry"><b>'+name+'</b><span>シグナル '+group.length+'件 ／ 検証 '+judged.length+'件 ／ 勝率 '+(judged.length?(wins/judged.length*100).toFixed(1)+'%':'—')+'</span></div>'}).join('');
- const bands=[['30〜40',30,40],['40〜50',40,50],['50〜60',50,60],['60〜70',60,70],['70〜100',70,100.0001]];
- el('rsiStats').innerHTML=bands.map(([name,min,max])=>{const group=hist.filter(x=>x.s!=='WAIT'&&Number.isFinite(Number(x.rsi))&&Number(x.rsi)>=min&&Number(x.rsi)<max);const judged=group.filter(x=>x.result==='win'||x.result==='loss');const wins=judged.filter(x=>x.result==='win').length;return '<div class="entry"><b>RSI '+name+'</b><span>シグナル '+group.length+'件 ／ 検証 '+judged.length+'件 ／ 勝率 '+(judged.length?(wins/judged.length*100).toFixed(1)+'%':'—')+'</span></div>'}).join('');
- el('history').innerHTML=hist.length?hist.slice(0,20).map((x,i)=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b class="'+x.s.toLowerCase()+'">'+x.s+'</b><span>'+x.t+'｜'+x.p+'</span></div>'+(x.reason?'<div style="margin-top:4px"><small>理由：'+x.reason+'</small></div>':'')+(x.s==='WAIT'?'':('<div style="margin-top:8px;display:flex;align-items:center;gap:6px"><small>結果：</small><button class="secondary" data-i="'+i+'" data-r="win" style="padding:6px 10px">勝ち</button><button class="secondary" data-i="'+i+'" data-r="loss" style="padding:6px 10px">負け</button><small>'+(x.result==='win'?'記録：勝ち':x.result==='loss'?'記録：負け':'未判定')+'</small></div>'))+'</div>').join(''):'履歴はまだありません。';
- el('history').querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>{const idx=Number(b.dataset.i);hist[idx].result=b.dataset.r;localStorage.setItem('gsp_hist',JSON.stringify(hist));show()});
+const $ = id => document.getElementById(id);
+let autoOn = false, timer = null, points = [];
+let history = JSON.parse(localStorage.getItem('kochan_hist') || '[]');
+let lastNotified = '';
 
-}
-el('analyze').onclick=()=>{let v={};for(let id of ids){if(el(id).value.trim()===''){alert('すべての項目に数値を入力してください');el(id).focus();return}v[id]=Number(el(id).value);if(!Number.isFinite(v[id]))return}
-if(v.rsi<0||v.rsi>100||v.atr<0){alert('RSIは0〜100、ATRは0以上で入力してください');return}
-const p20=el('prevEma20').value.trim()===''?null:Number(el('prevEma20').value),p50=el('prevEma50').value.trim()===''?null:Number(el('prevEma50').value);
-if((p20===null)!==(p50===null)){alert('クロス判定を使う場合は、1本前のEMA20とEMA50を両方入力してください');return}
-if(p20!==null&&(!Number.isFinite(p20)||!Number.isFinite(p50))){alert('1本前のEMA値を確認してください');return}
-let cross='判定不可';if(p20!==null){if(p20<=p50&&v.ema20>v.ema50)cross='ゴールデンクロス';else if(p20>=p50&&v.ema20<v.ema50)cross='デッドクロス';else cross='クロスなし'}
-const h4=el('h4').value,h1=el('h1').value,resVal=el('res').value.trim()===''?null:Number(el('res').value),supVal=el('sup').value.trim()===''?null:Number(el('sup').value),confirmed=el('confirm').checked;
-if((resVal!==null&&!Number.isFinite(resVal))||(supVal!==null&&!Number.isFinite(supVal))){alert('節目の値を確認してください');return}
-let s='WAIT',reason='条件がそろっていません';
-if(v.price>v.ema20&&v.price>v.ema50&&v.price>v.bb&&v.ema20>v.ema50&&v.rsi>=50&&v.rsi<=70){s='BUY';reason='上昇条件がそろいました'}
-else if(v.price<v.ema20&&v.price<v.ema50&&v.price<v.bb&&v.ema20<v.ema50&&v.rsi>=30&&v.rsi<=50){s='SELL';reason='下落条件がそろいました'}
-if(s==='BUY'&&h4==='down'&&!confirmed){s='WAIT';reason='反発の芽（未確認）：H4下降中の買いは節目確認が必要'}
-else if(s==='SELL'&&h4==='up'&&!confirmed){s='WAIT';reason='押し目の芽（未確認）：H4上昇中の売りは節目確認が必要'}
-if(s==='BUY'&&resVal!==null&&(resVal-v.price)<v.atr*0.5){s='WAIT';reason='レジスタンス直下：節目までが近すぎます'}
-else if(s==='SELL'&&supVal!==null&&(v.price-supVal)<v.atr*0.5){s='WAIT';reason='サポート直下：節目までが近すぎます'}
-if(s==='BUY'&&Math.abs(v.price-v.ema20)>v.atr*0.5){s='WAIT';reason='伸びすぎ：EMA20から離れすぎ（押し目待ち）'}
-else if(s==='SELL'&&Math.abs(v.price-v.ema20)>v.atr*0.5){s='WAIT';reason='落ちすぎ：EMA20から離れすぎ（戻り待ち）'}
-if(s==='BUY'&&h1==='down')reason='H1は下降：上位足と逆方向、サイズ注意';
-else if(s==='SELL'&&h1==='up')reason='H1は上昇：上位足と逆方向、サイズ注意';
-el('signal').textContent=s;el('signal').className='signal '+s.toLowerCase();if(!window._quiet)sendSignalNotice(s,cross);el('updated').textContent='更新：'+new Date().toLocaleString('ja-JP');el('trend').textContent=v.ema20>v.ema50?'上向き':v.ema20<v.ema50?'下向き':'横ばい';el('crossView').textContent=cross;el('rsiView').textContent=v.rsi.toFixed(2);el('sl').textContent=(v.atr*2.5).toFixed(3);el('tp').textContent=(v.atr*1).toFixed(3);el('reason').textContent=reason;el('slPrice').textContent=s==='BUY'?(v.price-v.atr*2.5).toFixed(3):s==='SELL'?(v.price+v.atr*2.5).toFixed(3):'—';el('tpPrice').textContent=s==='BUY'?(v.price+v.atr*1).toFixed(3):s==='SELL'?(v.price-v.atr*1).toFixed(3):'—';el('distRes').textContent=resVal!==null?(resVal-v.price).toFixed(3):'—';el('distSup').textContent=supVal!==null?(v.price-supVal).toFixed(3):'—';if(!window._quiet){hist.unshift({s,t:new Date().toLocaleString('ja-JP'),p:v.price,ema20:v.ema20,ema50:v.ema50,prevEma20:p20,prevEma50:p50,cross,rsi:v.rsi,atr:v.atr,bb:v.bb,h4,h1,res:resVal,sup:supVal,confirm:confirmed,reason});hist=hist.slice(0,100);localStorage.setItem('gsp_hist',JSON.stringify(hist))}show()};
-el('clear').onclick=()=>{if(confirm('履歴を消去しますか？')){hist=[];localStorage.removeItem('gsp_hist');show()}};
-let paper=JSON.parse(localStorage.getItem('gsp_paper')||'[]');
-function paperSave(){localStorage.setItem('gsp_paper',JSON.stringify(paper))}
-function paperRender(){
- const done=paper.filter(x=>x.status==='win'||x.status==='loss');
- const totalR=done.reduce((a,x)=>a+x.r,0);
- const wins=done.filter(x=>x.status==='win').length;
- el('paperCount').textContent=done.length+' / 20';
- el('paperTotalR').textContent=done.length?(totalR>=0?'+':'')+totalR.toFixed(2)+'R':'—';
- el('paperWinRate').textContent=done.length?(wins/done.length*100).toFixed(1)+'%':'—';
- el('paperOpen').textContent=paper.filter(x=>x.status==='open').length;
- el('paperList').innerHTML=paper.length?paper.map((x,i)=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b class="'+x.dir.toLowerCase()+'">'+x.dir+'</b><span>'+x.t+'</span></div><div style="margin-top:3px"><small>入 '+x.entry+'｜無効 '+x.stop+'｜目標 '+x.target+'｜予定 '+(x.plannedR>=0?'+':'')+x.plannedR.toFixed(2)+'R</small></div>'+(x.status==='open'?'<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="secondary" data-p="'+i+'" data-o="win" style="padding:6px 10px">目標到達</button><button class="secondary" data-p="'+i+'" data-o="loss" style="padding:6px 10px">無効到達</button><button class="secondary" data-p="'+i+'" data-o="skip" style="padding:6px 10px">未約定・対象外</button></div>':'<div style="margin-top:4px"><small>'+(x.status==='win'?'結果：勝ち（'+(x.r>=0?'+':'')+x.r.toFixed(2)+'R）':x.status==='loss'?'結果：負け（−1R）':'対象外（採点なし）')+'</small></div>')+'</div>').join(''):'<p class="note">紙サインはまだありません。</p>';
- el('paperList').querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>{const x=paper[Number(b.dataset.p)];const o=b.dataset.o;if(o==='win'){x.status='win';x.r=x.plannedR}else if(o==='loss'){x.status='loss';x.r=-1}else{x.status='skip'}paperSave();paperRender()});
-}
-el('paperAdd').onclick=()=>{
- const dir=el('paperDir').value,en=Number(el('paperEntry').value),st=Number(el('paperStop').value),ta=Number(el('paperTarget').value);
- if(![en,st,ta].every(Number.isFinite)||en===st){alert('エントリー・無効・目標を正しく入力してください');return}
- if(dir==='BUY'&&!(st<en&&en<ta)){alert('BUYは 無効 < エントリー < 目標 の順にしてください');return}
- if(dir==='SELL'&&!(ta<en&&en<st)){alert('SELLは 目標 < エントリー < 無効 の順にしてください');return}
- const plannedR=Math.abs(ta-en)/Math.abs(en-st);
- paper.unshift({dir,t:new Date().toLocaleString('ja-JP'),entry:en,stop:st,target:ta,plannedR,status:'open',r:0});
- paperSave();paperRender();
-};
-el('paperFromSignal').onclick=()=>{
- const s=el('signal').textContent.trim();
- if(s!=='BUY'&&s!=='SELL'){alert('今の判定はBUY／SELLではありません');return}
- const en=Number(el('price').value),st=parseFloat(el('slPrice').textContent),ta=parseFloat(el('tpPrice').textContent);
- if(![en,st,ta].every(Number.isFinite)){alert('判定の価格がそろっていません');return}
- el('paperDir').value=s;el('paperEntry').value=en;el('paperStop').value=st;el('paperTarget').value=ta;
-};
-function calcRender(){
- const risk=Number(el('calcRisk').value),fx=Number(el('calcFx').value),en=Number(el('calcEntry').value),st=Number(el('calcStop').value);
- if(![risk,fx,en,st].every(Number.isFinite)||en===st||fx<=0||risk<=0){el('calcWidth').textContent='—';el('calcLot').textContent='—';el('calcLoss').textContent='—';el('calcJudge').textContent='入力を確認';return}
- const width=Math.abs(en-st);
- if(fx<50||fx>300){el('calcWidth').textContent='$'+width.toFixed(2);el('calcLot').textContent='—';el('calcLoss').textContent='—';el('calcJudge').textContent='ドル円レートが異常です（通常は約158）';return}
- if(width>100){el('calcWidth').textContent='$'+width.toFixed(2);el('calcLot').textContent='—';el('calcLoss').textContent='—';el('calcJudge').textContent='ストップ幅が大きすぎます。価格を確認';return}
- const per001=width*fx;
- const units=Math.floor(risk/per001);
- el('calcWidth').textContent='$'+width.toFixed(2);
- if(units<1){el('calcLot').textContent='0.01でも超過';el('calcLoss').textContent='約'+Math.round(per001).toLocaleString()+'円';el('calcJudge').textContent='見送り推奨'}
- else{el('calcLot').textContent='0.01 ロット（固定）';el('calcLoss').textContent='約'+Math.round(per001).toLocaleString()+'円';el('calcJudge').textContent='ルール内'}
-}
-el('calcRun').onclick=calcRender;
-['calcBalance','calcRisk','calcFx','calcEntry','calcStop'].forEach(id=>el(id).addEventListener('input',calcRender));
-el('calcFromSignal').onclick=()=>{
- const en=el('price').value,st=parseFloat(el('slPrice').textContent);
- if(en===''||!Number.isFinite(st)){alert('先に分析してください（SL価格が必要です）');return}
- el('calcEntry').value=en;el('calcStop').value=st;calcRender();
-};
-window.addEventListener('resize',drawMainChart);el('csv').onclick=()=>{if(!hist.length){alert('履歴がありません');return}let csv='\uFEFF判定,日時,価格,EMA20,EMA50,1本前EMA20,1本前EMA50,クロス,RSI9,ATR14,BB中央線,H4,H1,レジスタンス,サポート,逆張り確認,理由,検証結果\n'+hist.map(x=>[x.s,x.t,x.p,x.ema20??'',x.ema50??'',x.prevEma20??'',x.prevEma50??'',x.cross??'判定不可',x.rsi??'',x.atr??'',x.bb??'',x.h4??'',x.h1??'',x.res??'',x.sup??'',x.confirm?'確認済み':'',('"'+String(x.reason??'').replace(/"/g,'""')+'"'),x.result??'未判定'].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-signal-history.csv';a.click();URL.revokeObjectURL(a.href)};el('autoMode').checked=localStorage.getItem('gsp_auto')==='1';
-el('autoMode').addEventListener('change',()=>{localStorage.setItem('gsp_auto',el('autoMode').checked?'1':'0');if(el('autoMode').checked)fetchData(true);syncAutoTimer()});
-function setNum(id,v){if(Number.isFinite(v)&&v>0)el(id).value=v}
-async function fetchData(manual){
- el('autoStatus').textContent='取り込み中…';
- try{
-  const r=await fetch('data.json?t='+Date.now(),{cache:'no-store'});
-  if(!r.ok)throw new Error('nodata');
-  const d=await r.json();
-  if(!Number.isFinite(d.price)||d.price<=0)throw new Error('empty');
-  setNum('price',d.price);setNum('ema20',d.ema20);setNum('prevEma20',d.ema20p);setNum('ema50',d.ema50);setNum('prevEma50',d.ema50p);
-  setNum('bb',d.bb);setNum('rsi',d.rsi);setNum('atr',d.atr);setNum('res',d.res);setNum('sup',d.sup);setNum('calcFx',d.usdjpy);
-  if(d.h4)el('h4').value=d.h4;
-  if(d.h1)el('h1').value=d.h1;
-  el('autoStatus').textContent='取り込み完了：'+(d.symbol||'XAUUSD')+'／'+(d.ts||'')+' のデータ';
-  saveInputsAutomatically();
-  el('analyze').click();
-  return true;
- }catch(e){
-  el('autoStatus').textContent='データを取得できませんでした。PC側でMT5と連携EAが動いているか確認してください。';
-  if(manual)alert('データを取得できませんでした');
-  return false;
- }
-}
-el('autoFetch').onclick=()=>fetchData(true);
-function emaSeries(vals,p){const k=2/(p+1);const out=[vals[0]];for(let i=1;i<vals.length;i++)out.push(vals[i]*k+out[i-1]*(1-k));return out}
-function rsiWilder(closes,p){let g=0,l=0;for(let i=1;i<=p;i++){const d=closes[i]-closes[i-1];if(d>0)g+=d;else l-=d}g/=p;l/=p;for(let i=p+1;i<closes.length;i++){const d=closes[i]-closes[i-1];g=(g*(p-1)+Math.max(d,0))/p;l=(l*(p-1)+Math.max(-d,0))/p}return l===0?100:100-100/(1+g/l)}
-function atrWilder(cs,p){const trs=[];for(let i=1;i<cs.length;i++)trs.push(Math.max(cs[i].h-cs[i].l,Math.abs(cs[i].h-cs[i-1].c),Math.abs(cs[i].l-cs[i-1].c)));let a=trs.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<trs.length;i++)a=(a*(p-1)+trs[i])/p;return a}
-let diag=[];
-async function krakenCandles(iv){const r=await fetch('https://api.kraken.com/0/public/OHLC?pair=PAXGUSD&interval='+iv);if(!r.ok)throw new Error('HTTP'+r.status);const j=await r.json();if(!j.result)throw new Error('形式エラー');const key=Object.keys(j.result).find(k=>k!=='last');return j.result[key].map(c=>({o:+c[1],h:+c[2],l:+c[3],c:+c[4]}))}
-async function visionCandles(iv){const r=await fetch('https://data-api.binance.vision/api/v3/klines?symbol=PAXGUSDT&interval='+iv+'&limit=200');if(!r.ok)throw new Error('HTTP'+r.status);const j=await r.json();if(!Array.isArray(j))throw new Error('形式エラー');return j.map(c=>({o:+c[1],h:+c[2],l:+c[3],c:+c[4]}))}
-let lastSrc='';
-async function coinbaseCandles(mins){
- if(mins===240){const h=await coinbaseCandles(60);const out=[];for(let i=0;i+3<h.length;i+=4){out.push({o:h[i].o,h:Math.max(h[i].h,h[i+1].h,h[i+2].h,h[i+3].h),l:Math.min(h[i].l,h[i+1].l,h[i+2].l,h[i+3].l),c:h[i+3].c})}return out}
- const g=mins===5?300:mins===15?900:3600;const r=await fetch('https://api.exchange.coinbase.com/products/PAXG-USD/candles?granularity='+g);if(!r.ok)throw new Error('HTTP'+r.status);const j=await r.json();if(!Array.isArray(j))throw new Error('形式エラー');return j.slice().reverse().map(c=>({o:+c[3],h:+c[2],l:+c[1],c:+c[4]}))
-}
-async function candlesAny(mins){
- try{const d=await krakenCandles(mins);lastSrc='Kraken';if(mins===5)diag.push('Kraken○');return d}catch(e){if(mins===5)diag.push('Kraken×'+(e&&e.message?e.message:''))}
- try{const d=await visionCandles({5:'5m',15:'15m',60:'1h',240:'4h'}[mins]);lastSrc='Binance';if(mins===5)diag.push('Binance○');return d}catch(e){if(mins===5)diag.push('Binance×'+(e&&e.message?e.message:''))}
- try{const d=await coinbaseCandles(mins);lastSrc='Coinbase';if(mins===5)diag.push('Coinbase○');return d}catch(e){if(mins===5)diag.push('Coinbase×'+(e&&e.message?e.message:''));throw e}
-}
-let pubRunning=false;
-function trendOf(closes){const a=emaSeries(closes,20),b=emaSeries(closes,50);const d=a[a.length-1]-b[b.length-1];return Math.abs(d)<0.01?'flat':(d>0?'up':'down')}
-async function fetchPublic(manual){
- if(pubRunning)return false;
- pubRunning=true;
- diag=[];
- el('autoStatus').textContent='公開データを取り込み中…';
- try{
-  let spot=0;
-  try{const r=await fetch('https://api.gold-api.com/price/XAU');if(!r.ok)throw new Error('HTTP'+r.status);const j=await r.json();if(j.price>0){spot=j.price;diag.push('価格○')}else diag.push('価格×形式')}catch(e){diag.push('価格×'+(e&&e.message?e.message:''))}
-  let m5=null;
-  try{m5=await candlesAny(5)}catch(e){await new Promise(rs=>setTimeout(rs,900));try{m5=await candlesAny(5)}catch(e2){}}
-  if(!m5||m5.length<100){
-   if(spot>0){
-    setNum('price',+spot.toFixed(3));
-    try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
-    el('autoStatus').textContent='価格だけ取得しました（指標は前回のまま）。［診断：'+diag.join('／')+'］';
-    saveInputsAutomatically();el('analyze').click();pubRunning=false;return true;
-   }
-   throw new Error('few');
+function ema(values, period) {
+  if (values.length < period) return Array(values.length).fill(null);
+  const k = 2 / (period + 1);
+  let e = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
+  const result = Array(period - 1).fill(null);
+  result.push(e);
+  for (let i = period; i < values.length; i++) {
+    e = values[i] * k + e * (1 - k);
+    result.push(e);
   }
-  window._tfCandles={m5:m5};
-  try{window._tfCandles.m15=await candlesAny(15)}catch(e){}
-  const closes=m5.map(x=>x.c);
-  const e20=emaSeries(closes,20),e50=emaSeries(closes,50);
-  const price=spot>0?spot:closes[closes.length-1];
-  setNum('price',+price.toFixed(3));setNum('ema20',+e20[e20.length-1].toFixed(3));setNum('prevEma20',+e20[e20.length-2].toFixed(3));
-  setNum('ema50',+e50[e50.length-1].toFixed(3));setNum('prevEma50',+e50[e50.length-2].toFixed(3));
-  setNum('bb',+(closes.slice(-20).reduce((a,b)=>a+b,0)/20).toFixed(3));
-  setNum('rsi',+rsiWilder(closes,9).toFixed(1));setNum('atr',+atrWilder(m5,14).toFixed(3));
-  const win=m5.slice(-97,-1);setNum('res',Math.max(...win.map(x=>x.h)));setNum('sup',Math.min(...win.map(x=>x.l)));
-  try{const h1=await candlesAny(60);window._tfCandles.h1=h1;el('h1').value=trendOf(h1.map(x=>x.c))}catch(e){}
-  try{const h4=await candlesAny(240);window._tfCandles.h4=h4;el('h4').value=trendOf(h4.map(x=>x.c))}catch(e){}
-  try{const r=await fetch('https://open.er-api.com/v6/latest/USD');const j=await r.json();if(j.rates&&j.rates.JPY)setNum('calcFx',+j.rates.JPY.toFixed(2))}catch(e){}
-  el('autoStatus').textContent='公開取得OK（指標の取得先：'+lastSrc+'）：価格は'+(spot>0?'金スポット価格':'PAXG価格')+'、指標はPAXGのローソクから計算（目安）。FXGTと数ドルずれることがあります。［診断：'+diag.join('／')+'］';
-  saveInputsAutomatically();el('analyze').click();judgeAllTF();drawMainChart();pubRunning=false;return true;
- }catch(e){
-  el('autoStatus').textContent='公開データを取得できませんでした。［診断：'+diag.join('／')+'／本体×'+(e&&e.message?e.message:'')+'］この画面のスクショをジェイムに送ってください。';
-  if(manual)alert('公開データを取得できませんでした');
-  pubRunning=false;return false;
- }
-}
-el('pubFetch').onclick=()=>fetchPublic(true);
-function judgeTF(price,ema20,ema50,ema20p,ema50p,rsi,atr,bb,ctx,res,sup){
- const crossUp=ema20>ema50,wasDown=ema20p<=ema50p;
- let s='WAIT',reason='条件がそろっていません';
- const buy=price>ema20&&price>ema50&&price>bb&&crossUp&&rsi>=50&&rsi<=70;
- const sell=price<ema20&&price<ema50&&price<bb&&!crossUp&&rsi>=30&&rsi<=50;
- if(buy){
-  if(Math.abs(price-ema20)>atr*0.5){s='WAIT';reason='伸びすぎ（押し目待ち）'}
-  else if(ctx==='down'){s='WAIT';reason='上位足は下降。反発の芽（未確認）'}
-  else if(res>0&&(res-price)<=atr*0.5){s='WAIT';reason='レジスタンス直下'}
-  else{s='BUY';reason=wasDown?'EMAがゴールデンクロス':'EMA上向き継続'}
- }else if(sell){
-  if(Math.abs(price-ema20)>atr*0.5){s='WAIT';reason='落ちすぎ（戻り待ち）'}
-  else if(ctx==='up'){s='WAIT';reason='上位足は上昇。逆張り未確認'}
-  else if(sup>0&&(price-sup)<=atr*0.5){s='WAIT';reason='サポート直下'}
-  else{s='SELL';reason=wasDown?'EMA下向き継続':'EMAがデッドクロス'}
- }
- const sl=s==='BUY'?price-atr*2.5:s==='SELL'?price+atr*2.5:null;
- const tp=s==='BUY'?price+atr*1:s==='SELL'?price-atr*1:null;
- return{s:s,reason:reason,sl:sl,tp:tp};
-}
-function tfIndicators(cs){
- const closes=cs.map(x=>x.c);const e20=emaSeries(closes,20),e50=emaSeries(closes,50);const n=closes.length;
- const win=cs.slice(-97,-1);
- return{price:closes[n-1],ema20:e20[n-1],ema50:e50[n-1],ema20p:e20[n-2],ema50p:e50[n-2],rsi:rsiWilder(closes,9),atr:atrWilder(cs,14),bb:closes.slice(-20).reduce((a,b)=>a+b,0)/20,res:win.length?Math.max(...win.map(x=>x.h)):0,sup:win.length?Math.min(...win.map(x=>x.l)):0};
+  return result;
 }
 
-function judgeAllTF(){
- const box=el('tfBody');const C=window._tfCandles;
- if(!C||!C.m5){box.innerHTML='<p class="note">先に「公開価格で自動取得」を押してください。</p>';return}
- const h1ctx=C.h1?trendOf(C.h1.map(x=>x.c)):'flat';
- const h4ctx=C.h4?trendOf(C.h4.map(x=>x.c)):'flat';
- const rows=[];
- const a=tfIndicators(C.m5);rows.push(['M5（5分）',judgeTF(a.price,a.ema20,a.ema50,a.ema20p,a.ema50p,a.rsi,a.atr,a.bb,h1ctx,a.res,a.sup),a]);
- if(C.m15){const b=tfIndicators(C.m15);rows.push(['M15（15分）',judgeTF(b.price,b.ema20,b.ema50,b.ema20p,b.ema50p,b.rsi,b.atr,b.bb,h4ctx,b.res,b.sup),b])}
- if(C.h1){const c=tfIndicators(C.h1);rows.push(['H1（1時間）',judgeTF(c.price,c.ema20,c.ema50,c.ema20p,c.ema50p,c.rsi,c.atr,c.bb,h4ctx,c.res,c.sup),c])}
- const sigs=rows.map(r=>r[1].s);
- const allBuy=sigs.length>=2&&sigs.every(x=>x==='BUY'),allSell=sigs.length>=2&&sigs.every(x=>x==='SELL');
- const buyN=sigs.filter(x=>x==='BUY').length,sellN=sigs.filter(x=>x==='SELL').length;
- let banner;
- if(allBuy)banner='<div style="background:rgba(39,197,138,.16);border:1px solid #27c58a;border-radius:12px;padding:12px;text-align:center;font-size:20px;font-weight:800;color:#27c58a;margin-bottom:11px">本命 BUY（全時間足一致）</div>';
- else if(allSell)banner='<div style="background:rgba(255,100,116,.14);border:1px solid #ff6474;border-radius:12px;padding:12px;text-align:center;font-size:20px;font-weight:800;color:#ff6474;margin-bottom:11px">本命 SELL（全時間足一致）</div>';
- else banner='<div style="background:rgba(243,201,105,.08);border:1px solid #5a5142;border-radius:12px;padding:12px;text-align:center;font-size:16px;font-weight:800;color:#f3c969;margin-bottom:11px">本命なし（BUY '+buyN+'／SELL '+sellN+'／WAIT '+(sigs.length-buyN-sellN)+'）</div>';
- box.innerHTML=banner+rows.map(r=>'<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+r[0]+'</b><b class="'+r[1].s.toLowerCase()+'">'+r[1].s+'</b></div><div style="margin-top:3px"><small>価格 '+r[2].price.toFixed(2)+'｜EMA20 '+r[2].ema20.toFixed(2)+'／EMA50 '+r[2].ema50.toFixed(2)+'｜RSI '+r[2].rsi.toFixed(0)+'｜ATR '+r[2].atr.toFixed(2)+'</small></div><div style="margin-top:2px"><small>'+r[1].reason+(r[1].sl?'｜SL '+r[1].sl.toFixed(2)+'／TP '+r[1].tp.toFixed(2):'')+'</small></div></div>').join('')+'<p class="note">各時間足とも、その時間足自身のローソクから計算した指標で判定しています（取得先：'+lastSrc+'、PAXGベースの目安）。上位足に逆らう判定は、確認が取れるまでWAITに落としています。</p>';
-}
-el('tfRun').onclick=()=>{fetchPublic(true)};
-function seriesRSI(closes,p){const out=new Array(closes.length).fill(50);if(closes.length<=p+1)return out;let g=0,l=0;for(let i=1;i<=p;i++){const d=closes[i]-closes[i-1];if(d>0)g+=d;else l-=d}g/=p;l/=p;out[p]=l===0?100:100-100/(1+g/l);for(let i=p+1;i<closes.length;i++){const d=closes[i]-closes[i-1];g=(g*(p-1)+Math.max(d,0))/p;l=(l*(p-1)+Math.max(-d,0))/p;out[i]=l===0?100:100-100/(1+g/l)}return out}
-function seriesATR(cs,p){const out=new Array(cs.length).fill(0);let a=0;for(let i=1;i<cs.length;i++){const tr=Math.max(cs[i].h-cs[i].l,Math.abs(cs[i].h-cs[i-1].c),Math.abs(cs[i].l-cs[i-1].c));if(i<=p)a=(a*(i-1)+tr)/i;else a=(a*(p-1)+tr)/p;out[i]=a}return out}
-function backtestTF(cs,holdBars){
- const closes=cs.map(x=>x.c);const e20=emaSeries(closes,20),e50=emaSeries(closes,50),e200=emaSeries(closes,200);
- const rsiS=seriesRSI(closes,9),atrS=seriesATR(cs,14);
- const bbS=closes.map((v,i)=>i>=19?closes.slice(i-19,i+1).reduce((a,b)=>a+b,0)/20:0);
- let wins=0,losses=0,totalR=0,trades=0,i=210;
- while(i<cs.length-1){
-  const ctx=closes[i]>e200[i]?'up':'down';
-  const winBars=cs.slice(Math.max(0,i-96),i);
-  const res=winBars.length?Math.max(...winBars.map(x=>x.h)):0;
-  const sup=winBars.length?Math.min(...winBars.map(x=>x.l)):0;
-  const r=judgeTF(closes[i],e20[i],e50[i],e20[i-1],e50[i-1],rsiS[i],atrS[i],bbS[i],ctx,res,sup);
-  if((r.s==='BUY'||r.s==='SELL')&&atrS[i]>0){
-   const dir=r.s==='BUY'?1:-1,entry=closes[i],slD=atrS[i]*2.5,tpD=atrS[i]*1;
-   const maxJ=Math.min(cs.length-1,i+holdBars);let done=false;
-   for(let j=i+1;j<=maxJ;j++){
-    const hitSL=dir>0?cs[j].l<=entry-slD+0.35:cs[j].h>=entry+slD-0.35;
-    const hitTP=dir>0?cs[j].h>=entry+tpD+0.35:cs[j].l<=entry-tpD-0.35;
-    if(hitSL){losses++;totalR-=1;trades++;i=j;done=true;break}
-    if(hitTP){wins++;totalR+=tpD/slD;trades++;i=j;done=true;break}
-   }
-   if(!done){const mtm=dir*(closes[maxJ]-entry)/slD;totalR+=mtm;trades++;if(mtm>0)wins++;else losses++;i=maxJ}
-  }else i++;
- }
- return{trades:trades,wins:wins,losses:losses,totalR:totalR,winRate:trades?wins/trades*100:0,bars:cs.length};
-}
-let btRunning=false;
-el('btRun').onclick=async()=>{
- if(btRunning)return;btRunning=true;
- const box=el('btBody');box.innerHTML='<p class="note">検証中…（過去データを取得しています）</p>';
- try{
-  const jobs=[['M5（5分）',5,48],['M15（15分）',15,16],['H1（1時間）',60,4]];
-  let html='';
-  for(const job of jobs){
-   try{
-    const cs=await candlesAny(job[1]);
-    if(!cs||cs.length<300){html+='<div class="entry" style="display:block"><b>'+job[0]+'</b><div><small>データ不足で検証できませんでした</small></div></div>';continue}
-    const r=backtestTF(cs,job[2]);
-    html+='<div class="entry" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+job[0]+'</b><b class="'+(r.totalR>=0?'buy':'sell')+'">'+(r.totalR>=0?'+':'')+r.totalR.toFixed(2)+'R</b></div><div style="margin-top:3px"><small>検証バー '+r.bars+'本｜トレード '+r.trades+'回｜勝ち '+r.wins+'／負け '+r.losses+'｜勝率 '+(r.trades?r.winRate.toFixed(1):'—')+'%</small></div></div>';
-   }catch(e){html+='<div class="entry" style="display:block"><b>'+job[0]+'</b><div><small>取得できませんでした</small></div></div>'}
+function rsi(values, period = 9) {
+  if (values.length < period + 1) return 50;
+  let gains = 0, losses = 0;
+  for (let i = 1; i <= period; i++) {
+    const diff = values[i] - values[i - 1];
+    if (diff >= 0) gains += diff; else losses -= diff;
   }
-  box.innerHTML=html+'<p class="note">合計Rがプラスの時間足が「使える候補」、マイナスはルールの見直し対象です。期間が短い検証は目安として見てください。</p>';
- }catch(e){box.innerHTML='<p class="note">バックテストに失敗しました。通信状態を確認してもう一度押してください。</p>'}
- btRunning=false;
+  gains /= period; losses /= period;
+  for (let i = period + 1; i < values.length; i++) {
+    const diff = values[i] - values[i - 1];
+    gains = (gains * (period - 1) + Math.max(diff, 0)) / period;
+    losses = (losses * (period - 1) + Math.max(-diff, 0)) / period;
+  }
+  if (losses === 0) return 100;
+  return 100 - 100 / (1 + gains / losses);
+}
+
+function macd(values, fast = 12, slow = 26, signal = 9) {
+  const emaFast = ema(values, fast);
+  const emaSlow = ema(values, slow);
+  const macdLine = emaFast.map((v, i) => (v != null && emaSlow[i] != null) ? v - emaSlow[i] : null);
+  const signalLine = ema(macdLine.filter(v => v != null), signal);
+  const lastMacd = macdLine[macdLine.length - 1];
+  const lastSignal = signalLine[signalLine.length - 1];
+  return { macd: lastMacd, signal: lastSignal, hist: lastMacd != null && lastSignal != null ? lastMacd - lastSignal : 0 };
+}
+
+function stochastic(highs, lows, closes, k = 14, d = 3) {
+  if (closes.length < k) return { k: 50, d: 50 };
+  const last = closes.length - 1;
+  const sliceH = highs.slice(last - k + 1, last + 1);
+  const sliceL = lows.slice(last - k + 1, last + 1);
+  const hh = Math.max(...sliceH);
+  const ll = Math.min(...sliceL);
+  const stochK = hh === ll ? 50 : ((closes[last] - ll) / (hh - ll)) * 100;
+  return { k: stochK, d: stochK };
+}
+
+function aggregateTF(points, minutes) {
+  if (!points.length) return [];
+  const closes = [];
+  const step = Math.max(1, Math.round(minutes / 5));
+  for (let i = step - 1; i < points.length; i += step) {
+    closes.push(points[i].p);
+  }
+  return closes;
+}
+
+function tfTrend(closes) {
+  if (closes.length < 20) return '中立';
+  const e20 = ema(closes, 20).at(-1);
+  const e50 = ema(closes, 50).at(-1);
+  if (e20 == null || e50 == null) return '中立';
+  return e20 > e50 ? '上昇' : e20 < e50 ? '下降' : '中立';
+}
+
+async function fetchData() {
+  $('status').textContent = '取得中…';
+  $('status').className = 'status';
+  try {
+    const [spotRes, intraRes] = await Promise.all([
+      fetch('https://xaus.com/api/v1/spot?compact=1'),
+      fetch('https://xaus.com/api/v1/intraday?hours=48')
+    ]);
+    const spot = await spotRes.json();
+    const intra = await intraRes.json();
+    const price = spot.spot_usd_oz;
+    points = (intra.points || []).map(p => ({ t: p.t, p: p.p }));
+    if (points.length < 50) throw new Error('データ不足');
+
+    const closes = points.map(x => x.p);
+    const highs = points.map(x => x.p * 1.0015);
+    const lows = points.map(x => x.p * 0.9985);
+
+    const e20arr = ema(closes, 20);
+    const e50arr = ema(closes, 50);
+    const e20 = e20arr.at(-1);
+    const e50 = e50arr.at(-1);
+    const rsiVal = rsi(closes, 9);
+    const macdVal = macd(closes);
+    const stochVal = stochastic(highs, lows, closes);
+    const atrVal = Math.max(2, Math.abs(price - e20) * 0.6 || 3);
+
+    // Multi-TF
+    const m5Closes = closes;
+    const h1Closes = aggregateTF(points, 60);
+    const h4Closes = aggregateTF(points, 240);
+    const m5Trend = tfTrend(m5Closes);
+    const h1Trend = tfTrend(h1Closes);
+    const h4Trend = tfTrend(h4Closes);
+
+    $('price').textContent = price.toFixed(2);
+    $('ema20').textContent = e20 ? e20.toFixed(2) : '--';
+    $('ema50').textContent = e50 ? e50.toFixed(2) : '--';
+    $('rsi').textContent = rsiVal.toFixed(1);
+    $('atr').textContent = atrVal.toFixed(2);
+    $('macd').textContent = macdVal.hist > 0 ? '+' + macdVal.hist.toFixed(2) : macdVal.hist.toFixed(2);
+    $('stoch').textContent = stochVal.k.toFixed(0);
+
+    $('tfM5').textContent = m5Trend;
+    $('tfH1').textContent = h1Trend;
+    $('tfH4').textContent = h4Trend;
+    const aligns = [m5Trend, h1Trend, h4Trend].filter(t => t !== '中立');
+    const same = aligns.length >= 2 && aligns.every(t => t === aligns[0]);
+    $('tfAlign').textContent = same ? aligns[0] : '不一致';
+
+    analyze(price, e20, e50, rsiVal, atrVal, macdVal, stochVal, { m5: m5Trend, h1: h1Trend, h4: h4Trend });
+    drawChart(closes, e20arr, e50arr);
+    $('status').textContent = 'LIVE ｜ ' + new Date().toLocaleTimeString('ja-JP');
+    $('status').className = 'status live';
+  } catch (e) {
+    $('status').textContent = '取得失敗: ' + e.message;
+    $('status').className = 'status err';
+    $('reason').textContent = 'データ取得に失敗しました。再試行してください。';
+  }
+}
+
+function analyze(price, ema20, ema50, rsi, atr, macdVal, stochVal, tfs) {
+  if (!ema20 || !ema50) {
+    $('signal').textContent = 'WAIT';
+    $('signal').className = 'signal-big wait';
+    $('score').textContent = '-- / 100';
+    $('reason').textContent = '指標計算中…';
+    return;
+  }
+
+  let score = 50;
+  let reasons = [];
+
+  // Trend (EMA)
+  if (price > ema20 && ema20 > ema50) { score += 18; reasons.push('上昇トレンド'); }
+  else if (price < ema20 && ema20 < ema50) { score -= 18; reasons.push('下降トレンド'); }
+  else { reasons.push('レンジ'); }
+
+  // RSI
+  if (rsi > 52 && rsi < 68) { score += 10; reasons.push('RSI良好'); }
+  else if (rsi < 48 && rsi > 32) { score -= 10; reasons.push('RSI弱気'); }
+  else if (rsi >= 72) { score -= 8; reasons.push('RSI過熱'); }
+  else if (rsi <= 28) { score += 8; reasons.push('RSI売られすぎ'); }
+
+  // MACD
+  if (macdVal.hist > 0) { score += 8; reasons.push('MACD陽転'); }
+  else if (macdVal.hist < 0) { score -= 8; reasons.push('MACD陰転'); }
+
+  // Stochastic
+  if (stochVal.k > 20 && stochVal.k < 80) {
+    if (stochVal.k > 50) score += 4;
+    else score -= 4;
+  } else if (stochVal.k >= 80) { score -= 6; reasons.push('Stoch過熱'); }
+  else if (stochVal.k <= 20) { score += 6; reasons.push('Stoch売られすぎ'); }
+
+  // Higher TF confirmation
+  if (tfs.h1 === '上昇' && tfs.h4 === '上昇') { score += 12; reasons.push('H1/H4上昇一致'); }
+  else if (tfs.h1 === '下降' && tfs.h4 === '下降') { score -= 12; reasons.push('H1/H4下降一致'); }
+  else if (tfs.h1 === '上昇' || tfs.h4 === '上昇') { score += 4; }
+  else if (tfs.h1 === '下降' || tfs.h4 === '下降') { score -= 4; }
+
+  // Pullback filter
+  const dist = Math.abs(price - ema20);
+  if (dist < atr * 1.2) { score += 6; reasons.push('押し目圏'); }
+  else { score -= 5; reasons.push('伸びすぎ'); }
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
+
+  let signal = 'WAIT', cls = 'wait';
+  if (score >= 70) { signal = 'BUY'; cls = 'buy'; }
+  else if (score <= 30) { signal = 'SELL'; cls = 'sell'; }
+  else if (score >= 58) { signal = 'WATCH'; cls = 'watch'; }
+  else if (score <= 42) { signal = 'WATCH'; cls = 'watch'; }
+
+  $('signal').textContent = signal;
+  $('signal').className = 'signal-big ' + cls;
+  $('score').textContent = score + ' / 100';
+  $('reason').textContent = reasons.slice(0, 3).join(' ｜ ') || '条件確認中';
+  $('dir').textContent = score > 55 ? 'BUY寄り' : score < 45 ? 'SELL寄り' : '中立';
+  $('strength').textContent = score >= 70 || score <= 30 ? '強' : score >= 58 || score <= 42 ? '中' : '弱';
+  $('sl').textContent = signal === 'BUY' ? (price - atr * 1.8).toFixed(1) : signal === 'SELL' ? (price + atr * 1.8).toFixed(1) : '--';
+  $('tp').textContent = signal === 'BUY' ? (price + atr * 2.2).toFixed(1) : signal === 'SELL' ? (price - atr * 2.2).toFixed(1) : '--';
+
+  // History & Notification
+  if (signal === 'BUY' || signal === 'SELL') {
+    const key = signal + price.toFixed(0);
+    if (key !== lastNotified) {
+      addHistory(signal, score, price, reasons.join(' / '));
+      sendNotification(signal, score, price);
+      lastNotified = key;
+    }
+  }
+  renderHistory();
+}
+
+function addHistory(signal, score, price, reason) {
+  history.unshift({
+    t: new Date().toLocaleString('ja-JP', { hour: '2-digit', minute: '2-digit', month: 'numeric', day: 'numeric' }),
+    s: signal,
+    score,
+    p: price.toFixed(1),
+    reason: reason.slice(0, 40)
+  });
+  if (history.length > 30) history.pop();
+  localStorage.setItem('kochan_hist', JSON.stringify(history));
+}
+
+function renderHistory() {
+  if (!history.length) {
+    $('history').innerHTML = '履歴はまだありません';
+    return;
+  }
+  $('history').innerHTML = history.slice(0, 12).map(h =>
+    `<div class="history-item"><span class="${h.s.toLowerCase()}" style="font-weight:700">${h.s} ${h.score}</span><span>${h.t} ｜ ${h.p}</span></div>`
+  ).join('');
+}
+
+function sendNotification(signal, score, price) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  new Notification('コちゃんトレード中', {
+    body: `${signal} シグナル（${score}点） 価格 ${price.toFixed(1)}`,
+    tag: 'kochan-signal',
+    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%23101827"/><polyline points="8,44 22,30 32,38 46,18 56,24" fill="none" stroke="%23f3c969" stroke-width="4"/></svg>'
+  });
+}
+
+function drawChart(closes, e20, e50) {
+  const cv = $('chart');
+  const ctx = cv.getContext('2d');
+  const dpr = devicePixelRatio || 1;
+  const w = cv.clientWidth;
+  const h = 200;
+  cv.width = w * dpr;
+  cv.height = h * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  const view = closes.slice(-80);
+  const min = Math.min(...view) * 0.997;
+  const max = Math.max(...view) * 1.003;
+  const X = i => (i / (view.length - 1)) * (w - 8) + 4;
+  const Y = v => h - 16 - ((v - min) / (max - min)) * (h - 32);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#f3c969';
+  ctx.lineWidth = 2;
+  view.forEach((p, i) => {
+    const x = X(i), y = Y(p);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  const off = closes.length - view.length;
+  function drawEma(arr, color) {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.2;
+    let started = false;
+    for (let i = 0; i < view.length; i++) {
+      const v = arr[off + i];
+      if (v == null) continue;
+      const x = X(i), y = Y(v);
+      if (!started) { ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  drawEma(e20, '#f3c969');
+  drawEma(e50, '#7cc4ff');
+}
+
+$('refresh').onclick = fetchData;
+$('auto').onclick = () => {
+  autoOn = !autoOn;
+  $('auto').textContent = '自動更新 ' + (autoOn ? 'ON' : 'OFF');
+  if (autoOn) {
+    timer = setInterval(fetchData, 45000);
+    fetchData();
+  } else clearInterval(timer);
 };
-document.querySelectorAll('input[type=number]').forEach(i=>i.setAttribute('inputmode','decimal'));
-el('paperCsv').onclick=()=>{if(!paper.length){alert('紙サインがありません');return}let csv='\uFEFF方向,日時,エントリー,無効,目標,予定R,状態,結果R\n'+paper.map(x=>[x.dir,x.t,x.entry,x.stop,x.target,x.plannedR.toFixed(2),x.status==='win'?'勝ち':x.status==='loss'?'負け':x.status==='skip'?'対象外':'未判定',x.status==='win'||x.status==='loss'?x.r.toFixed(2):''].join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gold-paper-signals.csv';a.click();URL.revokeObjectURL(a.href)};
-el('paperClear').onclick=()=>{if(confirm('紙サインを全て消去しますか？')){paper=[];paperSave();paperRender()}};
-let autoTimer=null,refreshing=false;
-async function quietRefresh(){if(refreshing||document.hidden)return;refreshing=true;window._quiet=true;try{const ok=await fetchData(false);if(!ok)await fetchPublic(false)}catch(e){}window._quiet=false;refreshing=false}
-function syncAutoTimer(){if(autoTimer){clearInterval(autoTimer);autoTimer=null}if(el('autoMode').checked)autoTimer=setInterval(quietRefresh,60000)}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&el('autoMode').checked)quietRefresh()});
-initPWA();show();paperRender();syncAutoTimer();drawMainChart();if(el('autoMode').checked)setTimeout(async()=>{const ok=await fetchData(false);if(!ok)fetchPublic(false)},600);
-</script></body></html>
+$('notifyBtn').onclick = async () => {
+  if (!('Notification' in window)) { alert('この環境は通知非対応です'); return; }
+  const perm = await Notification.requestPermission();
+  $('notifyBtn').textContent = perm === 'granted' ? '通知許可済み' : '通知未許可';
+};
+$('clearHist').onclick = () => {
+  history = [];
+  localStorage.removeItem('kochan_hist');
+  renderHistory();
+};
+
+renderHistory();
+fetchData();
+</script>
+</body>
+</html>
