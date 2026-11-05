@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="コちゃんトレード中">
-<title>コちゃんトレード中 — Gold Signal Pro Ultra v2</title>
+<title>コちゃんトレード中 — Gold Signal Pro Ultra v3</title>
 <style>
 :root { --bg:#0b1220; --card:#131e30; --gold:#f3c969; --green:#27c58a; --red:#ff6474; --blue:#7cc4ff; --muted:#9fb0c7; }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -44,7 +44,7 @@ canvas{width:100%;height:200px;background:#0b1423;border-radius:10px;margin-top:
 <body>
 <div class="wrap">
   <div class="brand">コちゃんトレード中</div>
-  <div class="sub">XAUUSD Ultra v2｜MACD・Stoch・H1/H4｜通知履歴強化</div>
+  <div class="sub">XAUUSD Ultra v3｜価格毎秒更新｜MACD・Stoch・H1/H4</div>
 
   <div class="card">
     <div id="signal" class="signal-big wait">WAIT</div>
@@ -103,9 +103,10 @@ canvas{width:100%;height:200px;background:#0b1423;border-radius:10px;margin-top:
 
 <script>
 const $ = id => document.getElementById(id);
-let autoOn = false, timer = null, points = [];
+let autoOn = false, timer = null, priceTimer = null, points = [];
 let history = JSON.parse(localStorage.getItem('kochan_hist') || '[]');
 let lastNotified = '';
+let lastFullAnalysis = 0;
 
 function ema(values, period) {
   if (values.length < period) return Array(values.length).fill(null);
@@ -174,6 +175,21 @@ function tfTrend(closes) {
   const e50 = ema(closes, 50).at(-1);
   if (e20 == null || e50 == null) return '中立';
   return e20 > e50 ? '上昇' : e20 < e50 ? '下降' : '中立';
+}
+
+async function fetchPriceOnly() {
+  try {
+    const res = await fetch('https://xaus.com/api/v1/spot?compact=1');
+    const data = await res.json();
+    const price = data.spot_usd_oz;
+    if (Number.isFinite(price)) {
+      $('price').textContent = price.toFixed(2);
+      $('status').textContent = 'LIVE ｜ ' + new Date().toLocaleTimeString('ja-JP');
+      $('status').className = 'status live';
+    }
+  } catch (e) {
+    // silent fail for price-only
+  }
 }
 
 async function fetchData() {
@@ -392,9 +408,15 @@ $('auto').onclick = () => {
   autoOn = !autoOn;
   $('auto').textContent = '自動更新 ' + (autoOn ? 'ON' : 'OFF');
   if (autoOn) {
-    timer = setInterval(fetchData, 45000);
+    // 価格は毎秒、フル分析は30秒ごと
+    priceTimer = setInterval(fetchPriceOnly, 1000);
+    timer = setInterval(fetchData, 30000);
     fetchData();
-  } else clearInterval(timer);
+    fetchPriceOnly();
+  } else {
+    clearInterval(timer);
+    clearInterval(priceTimer);
+  }
 };
 $('notifyBtn').onclick = async () => {
   if (!('Notification' in window)) { alert('この環境は通知非対応です'); return; }
